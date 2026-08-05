@@ -3,37 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ابتدائية مصعب بن عمير - لوحة تحكم المعلم (اللغة العربية - الصف السادس)</title>
+    <title>الابتدائية الأولى بنات - لوحة تحكم المعلمة (لغتي الجميلة - الصف السادس الابتدائي)</title>
     <!-- مكتبة SheetJS لتصدير واستيراد ملفات إكسل Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #0369a1;
-            --secondary: #0284c7;
-            --accent: #e0f2fe;
-            --bg: #f0f9ff;
+            --primary: #be185d;
+            --secondary: #db2777;
+            --accent: #fce7f3;
+            --bg: #fdf2f8;
             --card-bg: #ffffff;
-            --text: #1e293b;
+            --text: #831843;
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #10b981;
             --excel: #1d6f42;
         }
 
-        /* ثيمات ألوان الخلفية */
-        body.theme-default { --bg: #f0f9ff; --card-bg: #ffffff; --text: #1e293b; }
-        body.theme-blue { --bg: #e0f2fe; --card-bg: #ffffff; --text: #0369a1; --accent: #bae6fd; }
-        body.theme-dark { --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; }
-        body.theme-emerald { --bg: #ecfdf5; --card-bg: #ffffff; --text: #065f46; }
+        /* ثيمات ألوان الخلفية (تدرج لونين جذابين متناسقين متضمنة الثيم الملكي) */
+        body.theme-default { 
+            --bg: linear-gradient(135deg, #fdf2f8 0%, #fbcfe8 100%); 
+            --card-bg: #ffffff; 
+            --text: #831843; 
+        }
+        body.theme-royal { 
+            --bg: linear-gradient(135deg, #3b0764 0%, #581c87 100%); 
+            --card-bg: #4c1d95; 
+            --text: #f3e8ff; 
+            --secondary: #a855f7;
+            --primary: #6b21a8;
+        }
+        body.theme-rose { 
+            --bg: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%); 
+            --card-bg: #ffffff; 
+            --text: #881337; 
+            --secondary: #e11d48;
+            --primary: #be123c;
+        }
+        body.theme-emerald { 
+            --bg: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); 
+            --card-bg: #ffffff; 
+            --text: #065f46; 
+            --secondary: #059669;
+            --primary: #047857;
+        }
+        body.theme-amber { 
+            --bg: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); 
+            --card-bg: #ffffff; 
+            --text: #78350f; 
+            --secondary: #d97706;
+            --primary: #b45309;
+        }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
+            background: var(--bg);
+            background-attachment: fixed;
             color: var(--text);
             margin: 0;
             padding: 20px;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
             user-select: none;
+            min-height: 100vh;
+        }
+
+        .top-banner {
+            text-align: center;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .header {
@@ -73,13 +116,19 @@
             cursor: pointer;
             padding: 0;
             transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
         .theme-btn:hover { transform: scale(1.2); }
-        .btn-theme-1 { background-color: #f0f9ff; border-color: #0284c7; }
-        .btn-theme-2 { background-color: #e0f2fe; border-color: #0369a1; }
-        .btn-theme-3 { background-color: #0f172a; }
-        .btn-theme-4 { background-color: #ecfdf5; border-color: #059669; }
+        .btn-theme-default { background: linear-gradient(135deg, #f472b6, #db2777); border-color: #831843; }
+        .btn-theme-royal { background: linear-gradient(135deg, #7e22ce, #581c87); border-color: #f3e8ff; }
+        .btn-theme-rose { background: linear-gradient(135deg, #fb7185, #e11d48); border-color: #fff1f2; }
+        .btn-theme-emerald { background: linear-gradient(135deg, #34d399, #059669); border-color: #065f46; }
+        .btn-theme-amber { background: linear-gradient(135deg, #fbbf24, #d97706); border-color: #fffbeb; }
 
         .container { max-width: 1200px; margin: 0 auto; }
 
@@ -167,8 +216,8 @@
             text-align: center;
         }
 
-        body.theme-dark th, body.theme-dark td {
-            border-color: #334155;
+        body.theme-royal th, body.theme-royal td {
+            border-color: #6b21a8;
         }
 
         th { background-color: rgba(0,0,0,0.05); color: var(--secondary); }
@@ -198,13 +247,15 @@
         .sub-box h5 { margin-top: 0; color: var(--secondary); font-size: 16px; }
 
         .preview-msg {
-            background: rgba(2, 132, 199, 0.08);
+            background: rgba(219, 39, 119, 0.08);
             border-right: 4px solid var(--secondary);
             padding: 12px;
             margin: 10px 0;
             border-radius: 4px;
             white-space: pre-wrap;
             font-size: 14px;
+            direction: rtl;
+            text-align: right;
         }
 
         .whatsapp-btn {
@@ -240,7 +291,7 @@
 
         .lesson-card.executed {
             border-right: 5px solid var(--secondary);
-            background: rgba(2, 132, 199, 0.04);
+            background: rgba(219, 39, 119, 0.04);
         }
 
         .lesson-card.not-executed {
@@ -311,22 +362,37 @@
             font-size: 12px;
             font-weight: bold;
         }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            font-size: 14px;
+            opacity: 0.75;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body class="theme-default">
 
-    <div class="header">
-        <h1>ابتدائية مصعب بن عمير</h1>
-        <div>إعداد المعلم: خالد</div>
-        <p>لوحة تحكم معلم اللغة العربية - الصف السادس الابتدائي (وفق المنهج السعودي)</p>
+    <!-- شريط الحقوق ووسيلة التواصل في البداية -->
+    <div class="top-banner">
+        ﴿ هذا الجهد استغرق وقتاً وعناية، ولا أحلل نقله تجارياً أو نسخه دون إذن ﴾ &nbsp;|&nbsp; للتواصل والاتصال عبر واتساب: <a href="https://wa.me/966581015002" target="_blank" style="color: #ffff00; text-decoration: underline;">0581015002</a>
+    </div>
 
-        <!-- أزرار تغيير خلفية الصفحة -->
+    <div class="header">
+        <h1>الابتدائية الأولى بنات</h1>
+        <div>إعداد المعلمة: فلانه بنت فلان</div>
+        <p>لوحة تحكم معلمة مادة لغتي الجميلة - الصف السادس الابتدائي (وفق المنهج السعودي)</p>
+
+        <!-- أزرار تغيير خلفية الصفحة (متضمنة الثيم الملكي وثيمات متنوعة) -->
         <div class="theme-switcher">
-            <span style="font-size: 12px; margin-left: 5px;">🎨 مظهر الخلفية:</span>
-            <button class="theme-btn btn-theme-1" title="افتراضي" onclick="setTheme('theme-default')"></button>
-            <button class="theme-btn btn-theme-2" title="أزرق سماوي" onclick="setTheme('theme-blue')"></button>
-            <button class="theme-btn btn-theme-3" title="ليلي (داكن)" onclick="setTheme('theme-dark')"></button>
-            <button class="theme-btn btn-theme-4" title="أخضر زمردي" onclick="setTheme('theme-emerald')"></button>
+            <span style="font-size: 12px; margin-left: 5px;">🎨 المظهر:</span>
+            <button class="theme-btn btn-theme-default" title="وردي أساسي" onclick="setTheme('theme-default')">🌸</button>
+            <button class="theme-btn btn-theme-royal" title="الملكي الفاخر" onclick="setTheme('theme-royal')">👑</button>
+            <button class="theme-btn btn-theme-rose" title="توت الغروب" onclick="setTheme('theme-rose')">🌺</button>
+            <button class="theme-btn btn-theme-emerald" title="أخضر زمردي" onclick="setTheme('theme-emerald')">🌿</button>
+            <button class="theme-btn btn-theme-amber" title="ذهبي دافئ" onclick="setTheme('theme-amber')">⭐</button>
         </div>
     </div>
 
@@ -334,7 +400,7 @@
         <!-- الإحصائيات -->
         <div class="stats-grid">
             <div class="stat-card">
-                <h3>👥 إجمالي الطلاب</h3>
+                <h3>👥 إجمالي الطالبات</h3>
                 <p id="totalStudents">0</p>
             </div>
             <div class="stat-card">
@@ -367,12 +433,12 @@
             </div>
         </div>
 
-        <!-- تسجيل الطلاب والصفوف والجدول -->
+        <!-- تسجيل الطالبات والصفوف والجدول -->
         <div class="section-card">
-            <h3>✏️ تسجيل طلاب الصف السادس والصفوف الدراسية</h3>
+            <h3>✏️ تسجيل طالبات الصف السادس الابتدائي والصفوف الدراسية</h3>
             
             <div class="form-row">
-                <input type="text" id="studentName" placeholder="اسم الطالب">
+                <input type="text" id="studentName" placeholder="اسم الطالبة (Student Name)">
                 <select id="studentClassSelect">
                     <option value="">-- اختر الصف الدراسي --</option>
                     <option value="سادس/1">سادس/1</option>
@@ -384,7 +450,7 @@
                 </select>
                 <input type="text" id="studentClassCustom" placeholder="أو كتابة صف آخر..." style="max-width: 160px;">
                 <input type="tel" id="studentPhone" placeholder="رقم جوال ولي الأمر (مثال: 05xxxxxxx)">
-                <button onclick="addStudent()">➕ إضافة طالب</button>
+                <button onclick="addStudent()">➕ إضافة طالبة</button>
             </div>
 
             <!-- خيار فلترة وتصفية الجدول حسب الصف -->
@@ -399,7 +465,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>اسم الطالب</th>
+                            <th>اسم الطالبة</th>
                             <th>🏫 الصف</th>
                             <th>📱 رقم الجوال</th>
                             <th>🔴 الغياب</th>
@@ -427,9 +493,9 @@
             </div>
         </div>
 
-        <!-- استعلام عن طالب -->
+        <!-- استعلام عن طالبة -->
         <div class="section-card">
-            <h3>🔍 استعلام وتتبع طالب محدد</h3>
+            <h3>🔍 استعلام وتتبع طالبة محددة</h3>
             <div class="form-row">
                 <select id="selectStudent" onchange="loadStudentDetails()">
                     <option value="">-- اضغط هنا لاختيار الاسم --</option>
@@ -437,7 +503,7 @@
             </div>
 
             <div id="studentCard" style="display: none;">
-                <h4>سجل الطالب: <span id="selectedName"></span> (<span id="selectedClassBadge" class="class-badge"></span>)</h4>
+                <h4>سجل الطالبة: <span id="selectedName"></span> (<span id="selectedClassBadge" class="class-badge"></span>)</h4>
                 <div class="student-details">
                     <div class="detail-item">
                         <span>المشاركات</span>
@@ -483,26 +549,26 @@
                     <h5>✨ إرسال رسائل تشجيعية وشكر وتقدير</h5>
                     <div class="form-row">
                         <select id="selectMotivation" onchange="updateMotivationMsg()">
-                            <optgroup label="🌟 قسم لغتي العربية والتميز العام">
-                                <option value="1">1. فارس لغتي العربية الفصيحة</option>
-                                <option value="2">2. متحدث بارع وكاِتب مبدع</option>
-                                <option value="3">3. خطوات واثقة نحو القمة اللغوية</option>
-                                <option value="4">4. عقل لغوي متوقد وذكي</option>
-                                <option value="5">5. إصرار وإتقان لقواعد النحو</option>
+                            <optgroup label="🌟 التميز اللغوي والمشاركة الفعالة">
+                                <option value="1">1. نجمة لغتي / مبدعة لغة الضاد</option>
+                                <option value="2">2. إلقاء وقراءة معبرة ورائعة</option>
+                                <option value="3">3. تميز وإتقان في القواعد النحوية</option>
+                                <option value="4">4. مشاركة نشطة وفعالة في الحصة</option>
+                                <option value="5">5. حصيلة لغوية وثروة لفظية ممتازة</option>
                             </optgroup>
-                            <optgroup label="📚 قسم التحفيز على إنجاز الواجبات والمهام">
-                                <option value="6">6. همة إنجاز التمارين الكتابية بدقة</option>
-                                <option value="7">7. الطالب المنظم والمرتب بخطه</option>
-                                <option value="8">8. قراءة جهرية معبرة ومتميزة</option>
-                                <option value="9">9. إتقان الإملاء والترقيم ببراعة</option>
-                                <option value="10">10. تميز في النصوص الشعرية والنثرية</option>
+                            <optgroup label="📚 الواجبات والأنظمة الصفية">
+                                <option value="6">6. واجب مدرسي منظم ومرتب بدقة</option>
+                                <option value="7">7. خط جميل وإملاء صحيح وخالي من الأخطاء</option>
+                                <option value="8">8. تفوق ملحوظ في الفهم القرائي والتحليل</option>
+                                <option value="9">9. مشروع متميز ومبتكر ومتقن</option>
+                                <option value="10">10. اجتهاد وحرص عالٍ على التعلم والتميز</option>
                             </optgroup>
-                            <optgroup label="🤝 قسم الشكر والتواصل مع أولياء الأمور">
-                                <option value="11">11. الشراكة المثمرة والداعمة</option>
-                                <option value="12">12. غرس حب لغة القرآن الكريم</option>
-                                <option value="13">13. ثمرة المتابعة المنزلية الرائعة</option>
-                                <option value="14">14. التكامل الناجح مع المنزل</option>
-                                <option value="15">15. دعم مستمر وجهد مبارك</option>
+                            <optgroup label="🤝 شراكة ولي الأمر والتقدير">
+                                <option value="11">11. شراكة منزلية مثمرة ومباركة</option>
+                                <option value="12">12. متابعة منزلية واعية ومتميزة</option>
+                                <option value="13">13. أخلاق عالية وأدب جم وتركيز متميز</option>
+                                <option value="14">14. دعم مستمر وجهد مشكور من البيت</option>
+                                <option value="15">15. مستقبل واعد وطالبة مجتهدة بإذن الله</option>
                             </optgroup>
                         </select>
                     </div>
@@ -512,16 +578,16 @@
             </div>
         </div>
 
-        <!-- قائمة وحدات ودروس مادة لغتي الصف السادس الابتدائي (المنهج السعودي) وتحديد حالة التنفيذ -->
+        <!-- قائمة وحدات ودروس مادة لغتي الصف السادس (المنهج السعودي) وتحديد حالة التنفيذ -->
         <div class="section-card">
-            <h3>📚 دليل منهج لغتي الصف السادس الابتدائي (وفق المنهج السعودي المعتمد) وتتبع التنفيذ</h3>
+            <h3>📚 دليل منهج لغتي الجميلة الصف السادس الابتدائي (المنهج السعودي المعتمد) وتتبع التنفيذ</h3>
             
             <!-- نموذج إضافة درس جديد -->
             <div class="sub-box" style="margin-bottom: 15px; margin-top: 0;">
-                <h5 style="margin-bottom: 10px;">➕ إضافة درس جديد أو نص استماعي للمنهج</h5>
+                <h5 style="margin-bottom: 10px;">➕ إضافة درس جديد أو وحدة للمنهج</h5>
                 <div class="form-row">
-                    <input type="text" id="newLessonTitle" placeholder="عنوان الوحدة والدرس (مثال: الوحدة الأولى - النص القرائي)">
-                    <input type="text" id="newLessonDesc" placeholder="تفاصيل المهارات اللغوية والإملائية والنحوية...">
+                    <input type="text" id="newLessonTitle" placeholder="عنوان الوحدة والدرس (مثال: الوحدة الأولى: قدوات ومثُل - الدرس الأول...)">
+                    <input type="text" id="newLessonDesc" placeholder="تفاصيل المهارات والظواهر الإملائية والقواعد النحوية...">
                     <button onclick="addNewLesson()">➕ إضافة الدرس</button>
                 </div>
             </div>
@@ -529,13 +595,18 @@
             <div class="lessons-grid" id="mainLessonsContainer"></div>
         </div>
 
+        <!-- عبارة الحقوق المضافة -->
+        <div class="footer-note">
+            ﴿ هذا الجهد استغرق وقتاً وعناية، ولا أحلل نقله تجارياً أو نسخه دون إذن ﴾ &nbsp;|&nbsp; واتساب: <a href="https://wa.me/966581015002" target="_blank" style="color: inherit; text-decoration: underline;">0581015002</a>
+        </div>
+
     </div>
 
     <div id="toast" class="toast">✅ تم حفظ البيانات تلقائياً!</div>
 
     <script>
-        const TEACHER_NAME = "خالد";
-        const SCHOOL_NAME = "ابتدائية مصعب بن عمير";
+        const TEACHER_NAME = "فلانه بنت فلان";
+        const SCHOOL_NAME = "الابتدائية الأولى بنات";
 
         // --- 🛡️ حماية كود أدوات المطور والزر الأيمن ---
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
@@ -549,74 +620,65 @@
 
         function setTheme(themeName) {
             document.body.className = themeName;
-            localStorage.setItem('musab_theme_lugaty_grade6_v2', themeName);
+            localStorage.setItem('primary1_girls_lughati_grade6_v1', themeName);
         }
 
-        const savedTheme = localStorage.getItem('musab_theme_lugaty_grade6_v2') || 'theme-default';
+        const savedTheme = localStorage.getItem('primary1_girls_lughati_grade6_v1') || 'theme-default';
         document.body.className = savedTheme;
 
-        // منهج لغتي الصف السادس الابتدائي الشامل (المنهج السعودي)
+        // منهج لغتي الجميلة الصف السادس الابتدائي (المنهج السعودي)
         const defaultLessons = [
-            // الوحدة الأولى: قدوات ومثُل عليا
-            { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "مدخل الوحدة ونصوص الاستماع", desc: "التعرف على موضوع الوحدة واستماع النصوص ومناقشتها." },
-            { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "النص القرائي: مفتاح الشخصية", desc: "القراءة السليمة وتحليل الأفكار واستخلاص العبر." },
-            { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "الفهم القرائي: أبو بكر الصديق رضي الله عنه", desc: "قراءة النص قراءة استيعابية وتذكره وتوظيف معجمه." },
-            { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "الرسم الإملائي: همزتا الوصل والقطع", desc: "التفريق بين همزتي الوصل والقطع في أول الكلمات وكتابتها بصورة صحيحة." },
-            { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "الرسم الكتابي: كتابة حروف (ص، ض، ط، ظ) بخط النسخ", desc: "تطبيق قواعد خط النسخ في كتابة الحروف والكلمات بدقة." },
-            { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "الصنف اللغوي: النكرة والمعرفة", desc: "التعرف على النكرة والمعرفة (العلم، المعرف بأل) وتوظيفهما." },
-            { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "الأسلوب اللغوي: التمني والترجي", desc: "صياغة أساليب التمني بـ (ليت) والترجي بـ (لعل)." },
-            { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "الوظيفة النحوية: المبتدأ والخبر", desc: "إعراب المبتدأ والخبر وتمييز علامات رفع الاسم المفرد وجمع التكسير وجمع المؤنث السالم." },
+            { chapter: "الوحدة الأولى: قدوات ومثُل", title: "1. نص المدخل + النص القرائي (ما أجممل العمل!)", desc: "القراءة الإستيعابية، فهم النص، واستخراج القيم والدروس المستفادة." },
+            { chapter: "الوحدة الأولى: قدوات ومثُل", title: "2. الصنف اللغوي: النكرة والمعرفة", desc: "التعرف على النكرة والمعرفة وأنواع المعارف (العلم، المعرف بأل)." },
+            { chapter: "الوحدة الأولى: قدوات ومثُل", title: "3. الوظيفة النحوية: المفعول المطلق", desc: "قاعدة المفعول المطلق وإعرابه وأنواعه (لبيان نوع الفعل، العدد، تأكيد الفعل)." },
+            { chapter: "الوحدة الأولى: قدوات ومثُل", title: "4. الظاهرة الإملائية: همزتا القطع والوصل", desc: "رسم همزتا القطع والوصل في أول الفعل والاسم والحرف وتطبيقاتها." },
+            { chapter: "الوحدة الأولى: قدوات ومثُل", title: "5. الرسم الكتابي + النص الشعري", desc: "كتابة الحروف بخب الرقعة، ودراسة النص الشعري (الوصية)." },
 
-            // الوحدة الثانية: الصحة والغذاء
-            { chapter: "الوحدة الثانية: الصحة والغذاء", title: "مدخل الوحدة والنص الشعري (صحتي سر سعادتي)", desc: "الاستماع للنص الشعري وتذوق ألفاظه وإلقاؤه ببراعة." },
-            { chapter: "الوحدة الثانية: الصحة والغذاء", title: "النص القرائي: تلوث الماء والغذاء", desc: "فهم المقروء وتحليل الأسباب والنتائج الصحية والبيئية." },
-            { chapter: "الوحدة الثانية: الصحة والغذاء", title: "الرسم الإملائي: دخول اللام المكسورة على الكلمات المبدوءة بأل", desc: "القاعدة الإملائية لدخول اللام المكسورة وحذف همزة أل." },
-            { chapter: "الوحدة الثانية: الصحة والغذاء", title: "الرسم الكتابي: كتابة حروف (ف، ق، ك، ل) بخط النسخ", desc: "تدريبات تحسين الخط الإبداعي." },
-            { chapter: "الوحدة الثانية: الصحة والغذاء", title: "الصنف اللغوي: المعرب والمبني من الأسماء", desc: "التمييز بين الأسماء المعربة والأسماء المبنية." },
-            { chapter: "الوحدة الثانية: الصحة والغذاء", title: "الأسلوب اللغوي: المدح والذم", desc: "استعمال أساليب المدح بـ (نعم) والذم بـ (بئس)." },
-            { chapter: "الوحدة الثانية: الصحة والغذاء", title: "الوظيفة النحوية: كان وأخواتها", desc: "دخول كان وأخواتها على المبتدأ والخبر وتغيير إعرابهما." },
+            { chapter: "الوحدة الثانية: الوعي القرائي", title: "1. النص القرائي (لغة الخلود) + المدخل", desc: "أهمية اللغة العربية، القراءة التحليلية، وتنمية الفهم القرائي." },
+            { chapter: "الوحدة الثانية: الوعي القرائي", title: "2. الصنف اللغوي: الأعلام الموصولة", desc: "دراسة الأسماء الموصولة (الذي، التي، اللذان، اللتان، الذين، اللواتي/اللاتي)." },
+            { chapter: "الوحدة الثانية: الوعي القرائي", title: "3. الوظيفة النحوية: المفعول لأجله", desc: "تعريف المفعول لأجله، ضبطه بالشكل، وإعرابه في الجملة المفيدة." },
+            { chapter: "الوحدة الثانية: الوعي القرائي", title: "4. الظاهرة الإملائية: دخول اللام على الألفاظ المبدوءة بأل", desc: "دخول لام الجر على الكلمات المعرفة بأل وحذف الألف أو إثباتها." },
+            { chapter: "الوحدة الثانية: الوعي القرائي", title: "5. النص الشعري والتواصل الكتابي", desc: "تحليل النص الشعري وكتابة تلخيص نص أو إدخال عناصر القصة." },
 
-            // الوحدة الثالثة: الوعي القرائي
-            { chapter: "الوحدة الثالثة: الوعي القرائي", title: "مدخل الوحدة وقصة أصحاب الكتب", desc: "استكشاف أهمية القراءة والمكتبات والاطلاع." },
-            { chapter: "الوحدة الثالثة: الوعي القرائي", title: "النص القرائي: الحاكم والكاتب", desc: "تحليل النص الأدبي واستخراج القيم والدروس المستفادة." },
-            { chapter: "الوحدة الثالثة: الوعي القرائي", title: "الرسم الإملائي: الألف اللينة في آخر الأسماء والأفعال", desc: "كتابة الألف اللينة (قائمة أو على صورة ياء) بصورة صحيحة." },
-            { chapter: "الوحدة الثالثة: الوعي القرائي", title: "الصنف اللغوي: الأفعال (الماضي، المضارع، الأمر)", desc: "تصنيف الأفعال بحسب الزمن وعلامات بناء وإعراب الفعل المضارع." },
-            { chapter: "الوحدة الثالثة: الوعي القرائي", title: "الأسلوب اللغوي: الترجي والاعتذار", desc: "مهارات التواصل اللغوي السليم." },
-            { chapter: "الوحدة الثالثة: الوعي القرائي", title: "الوظيفة النحوية: إن وأخواتها", desc: "دخول إن وأخواتها (أن، كأن، لكن، ليت، لعل) على المبتدأ والخبر." }
+            { chapter: "الوحدة الثالثة: الوعي القرائي والمالي", title: "1. النص القرائي (صناع الأمان) + المدخل", desc: "الوعي المالي، الادخار، ترشيد الاستهلاك، وقراءة النصوص التوعوية." },
+            { chapter: "الوحدة الثالثة: الوعي القرائي والمالي", title: "2. الصنف اللغوي: اسم الإشارة", desc: "أسماء الإشارة للقريب والبعيد وتطبيقاتها النحوية والإملائية." },
+            { chapter: "الوحدة الثالثة: الوعي القرائي والمالي", title: "3. الوظيفة النحوية: المفعول فيه (ظرف الزمان والمكان)", desc: "التعرف على ظرف الزمان والمكان وإعرابهما بدقة." },
+            { chapter: "الوحدة الثالثة: الوعي القرائي والمالي", title: "4. الظاهرة الإملائية: الألف المتطرفة في الأفعال والأسماء والحروف", desc: "كتابة الألف اللينة المتطرفة (قائمة أو على صورة ياء مقصور)." },
+            { chapter: "الوحدة الثالثة: الوعي القرائي والمالي", title: "5. التواصل الشفهي والكتابي", desc: "إبداء الرأي، الحوار، وكتابة تقرير أو رسالة إدارية قصيرة." }
         ];
 
-        let lessons = JSON.parse(localStorage.getItem('musab_custom_lessons_lugaty_grade6_v2')) || defaultLessons;
+        let lessons = JSON.parse(localStorage.getItem('primary1_girls_custom_lessons_lughati6_v1')) || defaultLessons;
 
         const motivationTemplates = {
-            "1": "🌟 **فارس لغتي العربية الفصيحة** 🌟\nالمكرم ولي أمر الطالب المبدع، نود أن نشيد بفصاحته وتميزه الباهر في حصة لغة القرآن الكريم. نتمنى له دوام التوفيق والنجاح!",
-            "2": "🔥 **متحدث بارع وكاتب مبدع** 🔥\nالمكرم ولي أمر الطالب، ابنكم أظهر تفاعلاً لغوياً متميزاً وإلقاءً رائعاً للنصوص. شكراً لدعمكم المستمر.",
-            "3": "🏆 **خطوات واثقة نحو القمة اللغوية** 🏆\nيسرنا إبلاغكم بالمستوى المتقدم والإتقان العالي الذي أظهره ابنكم في مهارات القراءة والنحو والإملاء. إلى الأمام دائماً!",
-            "4": "💡 **عقل لغوي متوقد وذكي** 💡\nما شاء الله! يمتلك ابنكم حصيلة لغوية ممتازة ومهارات تحليلية نحوية تعكس اهتمامكم وحرصكم التربوي الفاضل.",
-            "5": "🎯 **إصرار وإتقان لقواعد النحو** 🎯\nنحيي ابنكم على الانضباط وحسن التميز في فهم وتطبيق القواعد النحوية والإملائية بدقة.",
-            "6": "📚 **همة إنجاز التمارين الكتابية بدقة** 📚\nكل الشكر والتقدير للطالب الملتزم بحل تدريبات كتاب النشاط والتمارين اللغوية في وقتها المحدد.",
-            "7": "✨ **الطالب المنظم والمرتب بخطه** ✨\nنثمن جهود ابنكم ونظافته وجمال خطه في كتابة النصوص وقواعد الإملاء.",
-            "8": "🚀 **قراءة جهرية معبرة ومتميزة** 🚀\nلاحظنا تفوقاً ملحوظاً وأداءً رائعاً في القراءة المعبرة عن المعنى خلال الحصة الدراسية.",
-            "9": "💎 **إتقان الإملاء والترقيم ببراعة** 💎\nنشكركم على المتابعة المنزلية الممتازة التي ظهرت جلياً في جودة ونظافة واجبات مادة لغتي.",
-            "10": "🌈 **تميز في النصوص الشعرية والنثرية** 🌈\nفخورون بهمة ابنكم وعزيمته العالية في حفظ وتذوق النصوص الأدبية والشعرية.",
-            "11": "🤝 **الشراكة المثمرة والداعمة** 🤝\nالمكرم ولي الأمر، نشكر لكم حسن التواصل والمتابعة المستمرة التي أثمرت تفوقاً واطراداً بنجاح ابنكم.",
-            "12": "🌱 **غرس حب لغة القرآن الكريم** 🌱\nنشكركم على حسن التربية، فابنكم تميز بالأخلاق الفاضلة والحرص اللغوي الدقيق داخل الفصل.",
-            "13": "🍎 **ثمرة المتابعة المنزلية الرائعة** 🍎\nتمتلكون طالباً متميزاً في أدبه وحرصه على إتقان لغته الأم، نبارك لكم هذا الإنجاز.",
-            "14": "🔗 **التكامل الناجح مع المنزل** 🔗\nتكامل دور المنزل مع المدرسة هو السر وراء تفوق ابنكم اللغوي، كل الشكر لاهتمامكم الكريم.",
-            "15": "💖 **دعم مستمر وجهد مبارك** 💖\nرسالة شكر وتقدير لأسرة الطالب على الدعم والتحفيز المستمر الذي ينعكس إيجاباً على مستواها في مادة لغتي."
+            "1": "🌟 **نجمة لغتي المتألقة** 🌟\nعزيزتي وليّة الأمر، نفخر اليوم بتميز ابنتكم وتألقها في حصة لغتي الجميلة بمشاركتها الفعالة وإبداعها المستمر. بوركت جهودكم!",
+            "2": "📖 **قراءة معبرة وإلقاء رائع** 📖\nعزيزتي وليّة الأمر، تميزت ابنتكم اليوم بمهارات قراءة نصوص لغتي الجميلة بصوت واضح ونطق سليم ومعبر. أحسنتِ صنعاً!",
+            "3": "💡 **إتقان وإبداع في القواعد النحوية** 💡\nعزيزتي وليّة الأمر، أظهرت ابنتكم فهماً رائعاً واستيعاباً دقيقاً لقواعد النحو والظواهر اللغوية اليوم. بارك الله في جهودها!",
+            "4": "✋ **مشاركة نشطة وتفاعل متميز** ✋\nعزيزتي وليّة الأمر، تميزت ابنتكم اليوم بحرصها العالي ومشاركتها النشطة وتركيزها المنقطع النظير داخل الفصل الدراسي.",
+            "5": "🧠 **ثروة لفظية وحصيلة لغوية ممتازة** 🧠\nعزيزتي وليّة الأمر، أبدعت ابنتكم اليوم في توظيف المفردات والتراكيب اللغوية الجديدة بشكل دقيق ومميز. مبروك لها!",
+            "6": "📝 **واجب مدرسي منظم ومرتب بدقة** 📝\nعزيزتي وليّة الأمر، نشكر لكم متابعتكم المنزلية الواعية. لقد كان واجب ابنتكم اليوم منظماً، دقيقاً، ومسلماً في موعده.",
+            "7": "✍️ **خط جميل وإملاء صحيح تماماً** ⑦\nعزيزتي وليّة الأمر، تميزت كتابة ابنتكم اليوم بوضوح الخط وجماله وسلامة الإملاء من الأخطاء. دمتِ متميزة يا غاليتي!",
+            "8": "📈 **تفوق ملحوظ في الفهم القرائي** ⑧\nعزيزتي وليّة الأمر، أبدعت ابنتكم اليوم في تحليل النصوص واستخراج الأفكار والدروس المستفادة بكفاءة عالية.",
+            "9": "🎨 **مشروع لغتي متميز ومبدع** ⑨\nعزيزتي وليّة الأمر، قدمت ابنتكم اليوم مشروعاً رائعاً ومنظماً لمادة لغتي الجميلة ينم عن ذوق رفيع وإبداع حقيقي.",
+            "10": "⭐ **اجتهاد وحرص عالٍ على التعلم** ⑩\nعزيزتي وليّة الأمر، إن حرص ابنتكم المستمر على الانضباط والتميز في لغة القرآن الكريم محل تقديرنا الدائم.",
+            "11": "🤝 **شراكة منزلية مثمرة ومباركة** ⑪\nعزيزتي وليّة الأمر، شكراً لتعاونكم المستمر ومتابعتكم الرائعة التي تظهر جلياً في تفوق ابنتكم وتألقها.",
+            "12": "🏡 **متابعة منزلية واعية ومتميزة** ⑫\nعزيزتي وليّة الأمر، إن اهتمامكم الدائم بمراجعة الدروس لابنتكم يثمر يوماً بعد يوم عن نتائج رائعة ومشرقة.",
+            "13": "🏅 **أخلاق عالية وأدب جم** ⑬\nعزيزتي وليّة الأمر، ابنتكم نموذج مشرف في حسن الخلق، والهدوء، والتركيز العالي، واحترام المعلمة والزميلات.",
+            "14": "🌱 **جهد مبارك ودعم مستمر** ⑭\nعزيزتي وليّة الأمر، نشكر لكم تشجيعكم المستمر لابنتكم، معاً نصنع لها مستقبلاً مشرقاً ومليئاً بالنجاح.",
+            "15": "🚀 **مستقبل واعد وطالبة مجتهدة** ⑮\nعزيزتي وليّة الأمر، بمثل هذا الاجتهاد والحرص، نتوقع لابنتكم مستقبلاً باهراً في حب لغة الضاد وإتقانها!"
         };
 
-        let students = JSON.parse(localStorage.getItem('musab_students_lugaty_grade6_v2')) || [];
-        let lessonStatus = JSON.parse(localStorage.getItem('musab_lesson_status_lugaty_grade6_v2')) || {};
+        let students = JSON.parse(localStorage.getItem('primary1_girls_students_lughati6_v1')) || [];
+        let lessonStatus = JSON.parse(localStorage.getItem('primary1_girls_lesson_status_lughati6_v1')) || {};
 
         function saveAndRefresh() {
-            localStorage.setItem('musab_students_lugaty_grade6_v2', JSON.stringify(students));
+            localStorage.setItem('primary1_girls_students_lughati6_v1', JSON.stringify(students));
             render();
             showToast('✅ تم الحفظ تلقائياً في الجوال!');
         }
 
         function toggleLessonStatus(index) {
             lessonStatus[index] = !lessonStatus[index];
-            localStorage.setItem('musab_lesson_status_lugaty_grade6_v2', JSON.stringify(lessonStatus));
+            localStorage.setItem('primary1_girls_lesson_status_lughati6_v1', JSON.stringify(lessonStatus));
             renderLessons();
             showToast('🔄 تم تحديث حالة الدرس وحفظه!');
         }
@@ -630,8 +692,8 @@
                 return;
             }
 
-            lessons.push({ chapter: "إضافات المعلم", title: title, desc: desc || 'لا تتوفر تفاصيل إضافية' });
-            localStorage.setItem('musab_custom_lessons_lugaty_grade6_v2', JSON.stringify(lessons));
+            lessons.push({ chapter: "إضافات المعلمة", title: title, desc: desc || 'لا توجد تفاصيل إضافية' });
+            localStorage.setItem('primary1_girls_custom_lessons_lughati6_v1', JSON.stringify(lessons));
 
             document.getElementById('newLessonTitle').value = '';
             document.getElementById('newLessonDesc').value = '';
@@ -643,7 +705,7 @@
         function deleteLesson(index) {
             if (confirm('هل أنت متأكد من حذف هذا الدرس من المنهج؟')) {
                 lessons.splice(index, 1);
-                localStorage.setItem('musab_custom_lessons_lugaty_grade6_v2', JSON.stringify(lessons));
+                localStorage.setItem('primary1_girls_custom_lessons_lughati6_v1', JSON.stringify(lessons));
                 renderLessons();
                 showToast('🗑️ تم حذف الدرس بنجاح!');
             }
@@ -665,7 +727,7 @@
             const studentClass = classCustom || classSelect || 'سادس/1';
 
             if (!name) {
-                alert('الرجاء إدخال اسم الطالب');
+                alert('الرجاء إدخال اسم الطالبة');
                 return;
             }
 
@@ -704,7 +766,7 @@
         }
 
         function deleteStudent(index) {
-            if (confirm('هل أنت متأكد من حذف هذا الطالب؟')) {
+            if (confirm('هل أنت متأكد من حذف هذه الطالبة؟')) {
                 students.splice(index, 1);
                 saveAndRefresh();
             }
@@ -713,33 +775,33 @@
         // --- 📊 وظائف Excel ---
         function exportExcel() {
             if (students.length === 0) {
-                alert('لا توجد بيانات طلاب للتصدير!');
+                alert('لا توجد بيانات طالبات للتصدير!');
                 return;
             }
 
             const excelData = students.map((st, idx) => ({
-                "م": idx + 1,
-                "اسم الطالب": st.name,
-                "الصف": st.studentClass || 'سادس/1',
-                "رقم الجوال": st.phone || '',
-                "الغياب": st.absence || 0,
-                "المشاركة": st.participation || 0,
-                "الواجبات": st.homework || 0,
-                "المهارات": st.skills || 0,
-                "المشاريع": st.projects || 0,
-                "الرسائل المرسلة": st.messages || 0
+                "No.": idx + 1,
+                "Student Name": st.name,
+                "Class": st.studentClass || 'سادس/1',
+                "Phone": st.phone || '',
+                "Absence": st.absence || 0,
+                "Participation": st.participation || 0,
+                "Homework": st.homework || 0,
+                "Skills": st.skills || 0,
+                "Projects": st.projects || 0,
+                "Messages Sent": st.messages || 0
             }));
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "طلاب سادس لغتي");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Grade 6 Girls Students");
 
             if(!workbook.Workbook) workbook.Workbook = {};
             if(!workbook.Workbook.Views) workbook.Workbook.Views = [];
             workbook.Workbook.Views[0] = { RTL: true };
 
             const dateStr = new Date().toISOString().slice(0,10);
-            XLSX.writeFile(workbook, `سجل_طلاب_لغتي_سادس_${dateStr}.xlsx`);
+            XLSX.writeFile(workbook, `Primary1_Girls_Grade6_Lughati_${dateStr}.xlsx`);
             showToast('📊 تم تصدير ملف إكسل بنجاح!');
         }
 
@@ -757,21 +819,21 @@
                     const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
                     if (jsonData.length > 0) {
-                        if (confirm(`تم العثور على (${jsonData.length}) طالب في الملف. هل تريد استيراد البيانات وإضافتها؟`)) {
+                        if (confirm(`تم العثور على (${jsonData.length}) طالبة في الملف. هل تريد استيراد البيانات وإضافتها؟`)) {
                             jsonData.forEach(row => {
-                                const name = row["اسم الطالب"] || row["اسم التلميذة"] || row["الاسم"] || row["Name"];
+                                const name = row["Student Name"] || row["اسم الطالبة"] || row["Name"];
                                 if (name) {
                                     students.push({
                                         id: Date.now() + Math.random(),
                                         name: name,
-                                        studentClass: row["الصف"] || row["الفصل"] || row["Class"] || "سادس/1",
-                                        phone: String(row["رقم الجوال"] || row["الجوال"] || row["Phone"] || ""),
-                                        absence: Number(row["الغياب"] || 0),
-                                        participation: Number(row["المشاركة"] || 0),
-                                        homework: Number(row["الواجبات"] || 0),
-                                        skills: Number(row["المهارات"] || 0),
-                                        projects: Number(row["المشاريع"] || 0),
-                                        messages: Number(row["الرسائل المرسلة"] || row["الرسائل"] || 0)
+                                        studentClass: row["Class"] || row["الصف"] || row["الفصل"] || "سادس/1",
+                                        phone: String(row["Phone"] || row["رقم الجوال"] || row["الجوال"] || ""),
+                                        absence: Number(row["Absence"] || row["الغياب"] || 0),
+                                        participation: Number(row["Participation"] || row["المشاركة"] || 0),
+                                        homework: Number(row["Homework"] || row["الواجبات"] || 0),
+                                        skills: Number(row["Skills"] || row["المهارات"] || 0),
+                                        projects: Number(row["Projects"] || row["المشاريع"] || 0),
+                                        messages: Number(row["Messages Sent"] || row["الرسائل"] || 0)
                                     });
                                 }
                             });
@@ -798,7 +860,7 @@
             const downloadAnchor = document.createElement('a');
             const dateStr = new Date().toISOString().slice(0,10);
             downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `نسخة_طلاب_لغتي_سادس_${dateStr}.json`);
+            downloadAnchor.setAttribute("download", `Primary1_Girls_Grade6_Backup_${dateStr}.json`);
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             downloadAnchor.remove();
@@ -842,7 +904,7 @@
                 const isExecuted = !!lessonStatus[idx];
                 if (isExecuted) executedCount++;
 
-                const statusLabel = isExecuted ? '✅ نفذت' : '⏳ غير منفذ';
+                const statusLabel = isExecuted ? '✅ منجز' : '⏳ قيد الانتظار';
                 const statusClass = isExecuted ? 'done' : 'pending';
                 const cardClass = isExecuted ? 'executed' : 'not-executed';
 
@@ -1012,10 +1074,10 @@
 
             const st = students[stIndex];
             const l = lessons[lIndex];
-            const statusLabel = lessonStatus[lIndex] ? '✅ نفذت' : '⏳ غير منفذ';
+            const statusLabel = lessonStatus[lIndex] ? '✅ منجز' : '⏳ قيد الانتظار';
 
-            const headerInfo = `🏫 ${SCHOOL_NAME}\n👨‍🏫 معلم المادة: ${TEACHER_NAME}\n\n`;
-            const msg = `${headerInfo}المكرم ولي أمر الطالب: ${st.name} (${st.studentClass || 'سادس/1'})\nنود إحاطتكم بدرس اليوم في مادة لغتي الجميلة (الصف السادس):\n📘 ${l.chapter} - ${l.title}\n📌 حالة الدرس: ${statusLabel}\n📝 أهم المهارات: ${l.desc}\n⭐ المهارات المتقنة للطالب: ${st.skills || 0}\n\nشاكرين حسن متابعتكم ورعايتكم.`;
+            const headerInfo = `🏫 المدرسة: ${SCHOOL_NAME}\n👩‍🏫 معلمة المادة: ${TEACHER_NAME}\n\n`;
+            const msg = `${headerInfo}عزيزتي وليّة أمر الطالبة: ${st.name} (${st.studentClass || 'سادس/1'})\nنحيطكم علماً بما تم إنجازه في درس اليوم لمادة لغتي الجميلة:\n📘 ${l.chapter} - ${l.title}\n📌 حالة الدرس: ${statusLabel}\n📝 المهارات والمفاهيم المدروسة: ${l.desc}\n⭐ المهارات المكتسبة: ${st.skills || 0}\n\nشكراً لتعاونكم المستمر ومتابعتكم الرائعة.`;
 
             preview.textContent = msg;
 
@@ -1034,15 +1096,15 @@
             const btn = document.getElementById('whatsappMotivationBtn');
 
             if (stIndex === '' || !mKey) {
-                preview.textContent = 'اختر الطالب والرسالة لعرض النص...';
+                preview.textContent = 'اختر الطالبة والرسالة لعرض النص...';
                 btn.href = '#';
                 return;
             }
 
             const st = students[stIndex];
             const msgTemplate = motivationTemplates[mKey] || '';
-            const headerInfo = `🏫 ${SCHOOL_NAME}\n👨‍🏫 معلم المادة: ${TEACHER_NAME}\n\n`;
-            const msg = `${headerInfo}${msgTemplate}\n\nالطالب: ${st.name} (${st.studentClass || 'سادس/1'})`;
+            const headerInfo = `🏫 المدرسة: ${SCHOOL_NAME}\n👩‍🏫 معلمة المادة: ${TEACHER_NAME}\n\n`;
+            const msg = `${headerInfo}${msgTemplate}\n\nالطالبة: ${st.name} (${st.studentClass || 'سادس/1'})`;
 
             preview.textContent = msg;
 
