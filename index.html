@@ -522,7 +522,7 @@
 
     </div>
 
-    <div id="toast" class="toast">✅ تم حفظ البيانات بنجاح!</div>
+    <div id="toast" class="toast">✅ تم حفظ البيانات تلقائياً!</div>
 
     <script>
         const TEACHER_NAME = "أبو يمن";
@@ -602,14 +602,14 @@
         function saveAndRefresh() {
             localStorage.setItem('musab_students_lugaty_grade6_v1', JSON.stringify(students));
             render();
-            showToast('✅ تم الحفظ بنجاح!');
+            showToast('✅ تم الحفظ تلقائياً في الجوال!');
         }
 
         function toggleLessonStatus(index) {
             lessonStatus[index] = !lessonStatus[index];
             localStorage.setItem('musab_lesson_status_lugaty_grade6_v1', JSON.stringify(lessonStatus));
             renderLessons();
-            showToast('🔄 تم تحديث حالة الدرس!');
+            showToast('🔄 تم تحديث حالة الدرس وحفظه!');
         }
 
         function addNewLesson() {
@@ -628,7 +628,7 @@
             document.getElementById('newLessonDesc').value = '';
 
             renderLessons();
-            showToast('➕ تم إضافة الدرس بنجاح!');
+            showToast('➕ تم إضافة الدرس وحفظه!');
         }
 
         function deleteLesson(index) {
@@ -636,15 +636,15 @@
                 lessons.splice(index, 1);
                 localStorage.setItem('musab_custom_lessons_lugaty_grade6_v1', JSON.stringify(lessons));
                 renderLessons();
-                showToast('🗑️ تم حذف الدرس!');
+                showToast('🗑️ تم حذف الدرس بنجاح!');
             }
         }
 
-        function showToast(msg = '✅ تم الحفظ بنجاح!') {
+        function showToast(msg = '✅ تم الحفظ تلقائياً!') {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2500);
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
         }
 
         function addStudent() {
@@ -1036,4 +1036,3 @@
     </script>
 </body>
 </html>
-
