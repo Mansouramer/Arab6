@@ -257,6 +257,35 @@
 
         th { background-color: rgba(0,0,0,0.05); color: var(--secondary); }
 
+        /* أزرار التنقل بين الصفحات (Pagination) لمنع التعليق */
+        .pagination-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .pagination-btns {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .pagination-btns button {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .pagination-btns button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .student-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -566,6 +595,16 @@
                 </table>
             </div>
 
+            <!-- شريط التنقل بين الصفحات (Pagination) لمنع التعليق عند الأعداد الكبيرة -->
+            <div class="pagination-bar">
+                <div id="paginationInfo" style="font-size: 13px; font-weight: bold;">عرض 0 من 0</div>
+                <div class="pagination-btns">
+                    <button id="prevPageBtn" onclick="changePage(-1)" class="btn-info">◀ السابق</button>
+                    <span id="pageIndicator" style="font-size: 14px; font-weight: bold; padding: 0 10px;">1 / 1</span>
+                    <button id="nextPageBtn" onclick="changePage(1)" class="btn-info">التالي ▶</button>
+                </div>
+            </div>
+
             <!-- الحفظ والاسترجاع (Excel + JSON) -->
             <div class="backup-controls">
                 <button class="btn-excel" onclick="exportExcel()">📊 تصدير إلى إكسل (Excel)</button>
@@ -717,6 +756,8 @@
 
         let activeQueryClass = '';
         let selectedStudentIndex = ''; 
+        let currentPage = 1;
+        const rowsPerPage = 20; // عرض 20 طالبة فقط في كل صفحة لمنع التعليق نهائياً
 
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
         document.onkeydown = function(e) {
@@ -809,25 +850,20 @@
             showToast('✅ تم الحفظ تلقائياً في الجهاز!');
         }
 
-        // --- ⚡ تحسين الأداء: تحديث نقاط الطالبة في الخلية والذاكرة مباشرة دون إعادة رسم الجدول بالكامل ---
+        // --- ⚡ تحديث فوري للنقاط في الخلية والذاكرة ---
         function updateScore(index, field, value) {
             students[index][field] = Math.max(0, (students[index][field] || 0) + value);
             
-            // تحديث رقم الخلية في الجدول مباشرة لتوفير الوقت وسرعة الاستجابة
             const cellElement = document.getElementById(`val-${index}-${field}`);
             if (cellElement) {
                 cellElement.textContent = students[index][field];
             }
 
-            // تحديث بطاقة الطالبة الفردية إن كانت مفتوحة حالياً
             if (String(selectedStudentIndex) === String(index)) {
                 loadStudentDetails();
             }
 
-            // تحديث البطاقات الإحصائية العلوية المباشرة
             updateHeaderStats();
-
-            // حفظ صامت في التخزين المحلي
             localStorage.setItem('awwal_students_ughati_v2', JSON.stringify(students));
         }
 
@@ -924,6 +960,7 @@
             document.getElementById('studentClassSelect').value = '';
 
             activeQueryClass = studentClass;
+            currentPage = 1;
             saveAndRefresh();
         }
 
@@ -1011,6 +1048,7 @@
                                     });
                                 }
                             });
+                            currentPage = 1;
                             saveAndRefresh();
                             showToast('📂 تم استيراد ملف الإكسل بنجاح!');
                         }
@@ -1052,6 +1090,7 @@
                     if (Array.isArray(importedStudents)) {
                         if (confirm('هل أنت متأكد من استعادة هذه النسخة؟')) {
                             students = importedStudents;
+                            currentPage = 1;
                             saveAndRefresh();
                             showToast('📂 تم استرجاع البيانات بنجاح!');
                         }
@@ -1155,11 +1194,18 @@
 
         function selectQueryClass(className) {
             activeQueryClass = className;
+            currentPage = 1;
             document.getElementById('filterStudentNameInput').value = '';
             render();
         }
 
         function filterTableByStudentInput() {
+            currentPage = 1;
+            render();
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
             render();
         }
 
@@ -1211,25 +1257,44 @@
 
             let totals = { skills: 0, participation: 0, homework: 0, absence: 0, projects: 0, messages: 0 };
 
-            students.forEach((st, i) => {
-                const stClass = st.studentClass || 'سادس/1';
-
+            // حساب الإجماليات الشاملة خلف الكواليس بسرعة فائقة
+            students.forEach(st => {
                 totals.skills += st.skills || 0;
                 totals.participation += st.participation || 0;
                 totals.homework += st.homework || 0;
                 totals.absence += st.absence || 0;
                 totals.projects += st.projects || 0;
                 totals.messages += st.messages || 0;
+            });
 
+            // تصفية السجلات المطلوبة فقط
+            let filteredStudents = students.map((st, idx) => ({ st, originalIndex: idx })).filter(item => {
                 if (activeQueryClass === '' && searchInputVal === '') {
-                    return;
+                    return false;
                 }
-
                 if (searchInputVal !== '') {
-                    if (!st.name.toLowerCase().includes(searchInputVal)) return;
+                    return item.st.name.toLowerCase().includes(searchInputVal);
                 } else {
-                    if (activeQueryClass !== 'ALL' && stClass !== activeQueryClass) return;
+                    const stClass = item.st.studentClass || 'سادس/1';
+                    if (activeQueryClass === 'ALL') return true;
+                    return stClass === activeQueryClass;
                 }
+            });
+
+            const totalFilteredCount = filteredStudents.length;
+            const totalPages = Math.ceil(totalFilteredCount / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            // استخراج شريحة الصفحة الحالية فقط (Pagination Slice) لضمان عدم تعليق المتصفح
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const paginatedItems = filteredStudents.slice(startIndex, endIndex);
+
+            paginatedItems.forEach(item => {
+                const st = item.st;
+                const i = item.originalIndex;
+                const stClass = st.studentClass || 'سادس/1';
 
                 tbody.innerHTML += `
                     <tr>
@@ -1276,6 +1341,13 @@
                 tbody.innerHTML = `<tr><td colspan="10" style="padding: 25px; opacity: 0.7;">${emptyMsg}</td></tr>`;
             }
 
+            // تحديث عناصر التحكم الخاصة بالصفحات
+            document.getElementById('paginationInfo').textContent = `عرض من ${totalFilteredCount > 0 ? startIndex + 1 : 0} إلى ${Math.min(endIndex, totalFilteredCount)} من إجمالي ${totalFilteredCount} طالبة`;
+            document.getElementById('pageIndicator').textContent = `${currentPage} / ${totalPages}`;
+            document.getElementById('prevPageBtn').disabled = (currentPage <= 1);
+            document.getElementById('nextPageBtn').disabled = (currentPage >= totalPages);
+
+            // تحديث البطاقات الإحصائية العلوية
             document.getElementById('totalStudents').textContent = students.length;
             document.getElementById('totalSkills').textContent = totals.skills;
             document.getElementById('totalParticipation').textContent = totals.participation;
