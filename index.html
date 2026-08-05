@@ -205,7 +205,6 @@
         .btn-excel { background: var(--excel); }
         .btn-action { padding: 4px 8px; font-size: 12px; margin: 0 2px; }
 
-        /* أزرار استعلام الصفوف التفاعلية */
         .classes-query-grid {
             display: flex;
             flex-wrap: wrap;
@@ -399,7 +398,6 @@
             font-weight: bold;
         }
 
-        /* تصميم صندوق البحث المخصص المطور للاستعلام عن طالبة */
         .searchable-dropdown-container {
             position: relative;
             width: 100%;
@@ -717,11 +715,9 @@
         const TEACHER_NAME = "فلانة بنت فلان";
         const SCHOOL_NAME = "الابتدائية الأولى بنات";
 
-        // متغير الصف المحدد حالياً للاستعلام (القيمة الافتراضية فارغة '' حتى لا يتم عرض الطالبات تلقائياً عند فتح الصفحة)
         let activeQueryClass = '';
-        let selectedStudentIndex = ''; // مؤشر الطالبة المختارة للاستعلام الفردي
+        let selectedStudentIndex = ''; 
 
-        // --- 🛡️ حماية كود أدوات المطور والزر الأيمن ---
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
         document.onkeydown = function(e) {
             if (e.keyCode === 123 || 
@@ -731,7 +727,6 @@
             }
         };
 
-        // إغلاق القائمة المنسدلة للبحث عند النقر في أي مكان خارجها
         document.addEventListener('click', function(e) {
             const container = document.querySelector('.searchable-dropdown-container');
             const list = document.getElementById('studentDropdownList');
@@ -814,6 +809,47 @@
             showToast('✅ تم الحفظ تلقائياً في الجهاز!');
         }
 
+        // --- ⚡ تحسين الأداء: تحديث نقاط الطالبة في الخلية والذاكرة مباشرة دون إعادة رسم الجدول بالكامل ---
+        function updateScore(index, field, value) {
+            students[index][field] = Math.max(0, (students[index][field] || 0) + value);
+            
+            // تحديث رقم الخلية في الجدول مباشرة لتوفير الوقت وسرعة الاستجابة
+            const cellElement = document.getElementById(`val-${index}-${field}`);
+            if (cellElement) {
+                cellElement.textContent = students[index][field];
+            }
+
+            // تحديث بطاقة الطالبة الفردية إن كانت مفتوحة حالياً
+            if (String(selectedStudentIndex) === String(index)) {
+                loadStudentDetails();
+            }
+
+            // تحديث البطاقات الإحصائية العلوية المباشرة
+            updateHeaderStats();
+
+            // حفظ صامت في التخزين المحلي
+            localStorage.setItem('awwal_students_ughati_v2', JSON.stringify(students));
+        }
+
+        function updateHeaderStats() {
+            let totals = { skills: 0, participation: 0, homework: 0, absence: 0, projects: 0, messages: 0 };
+            students.forEach(st => {
+                totals.skills += st.skills || 0;
+                totals.participation += st.participation || 0;
+                totals.homework += st.homework || 0;
+                totals.absence += st.absence || 0;
+                totals.projects += st.projects || 0;
+                totals.messages += st.messages || 0;
+            });
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalSkills').textContent = totals.skills;
+            document.getElementById('totalParticipation').textContent = totals.participation;
+            document.getElementById('totalHomework').textContent = totals.homework;
+            document.getElementById('totalAbsence').textContent = totals.absence;
+            document.getElementById('totalProjects').textContent = totals.projects;
+            document.getElementById('totalMessagesSent').textContent = totals.messages;
+        }
+
         function toggleLessonStatus(index) {
             lessonStatus[index] = !lessonStatus[index];
             localStorage.setItem('awwal_lesson_status_ughati_v2', JSON.stringify(lessonStatus));
@@ -891,11 +927,6 @@
             saveAndRefresh();
         }
 
-        function updateScore(index, field, value) {
-            students[index][field] = Math.max(0, (students[index][field] || 0) + value);
-            saveAndRefresh();
-        }
-
         function incrementMessageCount() {
             const index = selectedStudentIndex;
             if (index !== '' && students[index]) {
@@ -907,7 +938,6 @@
         function deleteStudent(index) {
             if (confirm('هل أنت متأكد من حذف هذه الطالبة؟')) {
                 students.splice(index, 1);
-                // إذا كانت الطالبة المحذوفة هي المحددة حالياً للاستعلام، قم بإلغاء التحديد
                 if (String(selectedStudentIndex) === String(index)) {
                     selectedStudentIndex = '';
                     document.getElementById('studentSearchInput').value = '';
@@ -1093,7 +1123,6 @@
             queryContainer.innerHTML = '';
             bulkTargetSelect.innerHTML = '<option value="ALL">جميع الصفوف</option>';
 
-            // زر المربع الفارغ الافتراضي في البداية (لتفريغ العرض وعدم إظهار الطالبات)
             const isEmptyActive = (activeQueryClass === '') ? 'active' : '';
             queryContainer.innerHTML += `
                 <button class="class-query-btn ${isEmptyActive}" onclick="selectQueryClass('')">
@@ -1101,7 +1130,6 @@
                 </button>
             `;
 
-            // زر "جميع الصفوف"
             const isAllActive = (activeQueryClass === 'ALL') ? 'active' : '';
             queryContainer.innerHTML += `
                 <button class="class-query-btn ${isAllActive}" onclick="selectQueryClass('ALL')">
@@ -1127,7 +1155,6 @@
 
         function selectQueryClass(className) {
             activeQueryClass = className;
-            // تفريغ خانة البحث النصية عند تغيير الصف
             document.getElementById('filterStudentNameInput').value = '';
             render();
         }
@@ -1136,7 +1163,6 @@
             render();
         }
 
-        // --- وظائف مربع البحث الحر بالكيبورد لاستعلام وتتبع الطالبة الفردية ---
         function showStudentDropdown() {
             filterStudentDropdown();
         }
@@ -1195,13 +1221,10 @@
                 totals.projects += st.projects || 0;
                 totals.messages += st.messages || 0;
 
-                // إذا كان مربع الاستعلام فارغاً ولم يتم إدخال شيء في البحث النصي، فلا تعرض أي طالبة
                 if (activeQueryClass === '' && searchInputVal === '') {
                     return;
                 }
 
-                // التصفية والتحقق: إذا تم إدخال اسم في خانة البحث النصية، طابق الاسم.
-                // وإلا إذا تم اختيار صف محدد، طابق الصف (أو اعرض الكل إذا اخترت "جميع الصفوف")
                 if (searchInputVal !== '') {
                     if (!st.name.toLowerCase().includes(searchInputVal)) return;
                 } else {
@@ -1215,30 +1238,30 @@
                         <td>${st.phone || '-'}</td>
                         <td>
                             <button class="btn-action" onclick="updateScore(${i}, 'absence', 1)">+</button>
-                            ${st.absence || 0}
+                            <span id="val-${i}-absence">${st.absence || 0}</span>
                             <button class="btn-action" onclick="updateScore(${i}, 'absence', -1)">-</button>
                         </td>
                         <td>
                             <button class="btn-action" onclick="updateScore(${i}, 'participation', 1)">+</button>
-                            ${st.participation || 0}
+                            <span id="val-${i}-participation">${st.participation || 0}</span>
                             <button class="btn-action" onclick="updateScore(${i}, 'participation', -1)">-</button>
                         </td>
                         <td>
                             <button class="btn-action" onclick="updateScore(${i}, 'homework', 1)">+</button>
-                            ${st.homework || 0}
+                            <span id="val-${i}-homework">${st.homework || 0}</span>
                             <button class="btn-action" onclick="updateScore(${i}, 'homework', -1)">-</button>
                         </td>
                         <td>
                             <button class="btn-action" onclick="updateScore(${i}, 'skills', 1)">+</button>
-                            ${st.skills || 0}
+                            <span id="val-${i}-skills">${st.skills || 0}</span>
                             <button class="btn-action" onclick="updateScore(${i}, 'skills', -1)">-</button>
                         </td>
                         <td>
                             <button class="btn-action" onclick="updateScore(${i}, 'projects', 1)">+</button>
-                            ${st.projects || 0}
+                            <span id="val-${i}-projects">${st.projects || 0}</span>
                             <button class="btn-action" onclick="updateScore(${i}, 'projects', -1)">-</button>
                         </td>
-                        <td><strong>${st.messages || 0}</strong></td>
+                        <td><strong id="val-${i}-messages">${st.messages || 0}</strong></td>
                         <td>
                             <button class="btn-danger btn-action" onclick="deleteStudent(${i})">🗑️</button>
                         </td>
@@ -1246,7 +1269,6 @@
                 `;
             });
 
-            // رسالة توجيهية إذا كان الجدول فارغاً
             if (tbody.innerHTML === '') {
                 const emptyMsg = (activeQueryClass === '' && searchInputVal === '') ? 
                     'يرجى النقر على أحد الصفوف أو زر "جميع الصفوف" بالأعلى لعرض بيانات الطالبات.' : 
@@ -1262,7 +1284,6 @@
             document.getElementById('totalProjects').textContent = totals.projects;
             document.getElementById('totalMessagesSent').textContent = totals.messages;
 
-            // تحديث تفاصيل الطالبة الفردية المختارة إن وجدت
             if (selectedStudentIndex !== '' && students[selectedStudentIndex]) {
                 loadStudentDetails();
             } else {
@@ -1434,10 +1455,8 @@
             showToast('🚀 جاري فتح رسائل الواتساب الجماعية...');
         }
 
-        // التهيئة والتشغيل
         renderLessons();
         render();
     </script>
 </body>
 </html>
-
