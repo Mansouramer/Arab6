@@ -20,7 +20,7 @@
             --excel: #1d6f42;
         }
 
-        /* ثيمات ألوان الخلفية (تدرج لونين جذابين متناسقين متضمنة الثيم الملكي والأزرق) */
+        /* ثيمات ألوان الخلفية (تدرج لونين جذابين متناسقين بدون الثيم الثالث) */
         body.theme-default { 
             --bg: linear-gradient(135deg, #fdf2f8 0%, #fbcfe8 100%); 
             --card-bg: #ffffff; 
@@ -32,13 +32,6 @@
             --text: #f3e8ff; 
             --secondary: #a855f7;
             --primary: #6b21a8;
-        }
-        body.theme-rose { 
-            --bg: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%); 
-            --card-bg: #ffffff; 
-            --text: #881337; 
-            --secondary: #e11d48;
-            --primary: #be123c;
         }
         body.theme-emerald { 
             --bg: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); 
@@ -134,7 +127,6 @@
         .theme-btn:hover { transform: scale(1.2); }
         .btn-theme-default { background: linear-gradient(135deg, #f472b6, #db2777); border-color: #831843; }
         .btn-theme-royal { background: linear-gradient(135deg, #7e22ce, #581c87); border-color: #f3e8ff; }
-        .btn-theme-rose { background: linear-gradient(135deg, #fb7185, #e11d48); border-color: #fff1f2; }
         .btn-theme-emerald { background: linear-gradient(135deg, #34d399, #059669); border-color: #065f46; }
         .btn-theme-amber { background: linear-gradient(135deg, #fbbf24, #d97706); border-color: #fffbeb; }
         .btn-theme-blue { background: linear-gradient(135deg, #60a5fa, #2563eb); border-color: #1e3a8a; }
@@ -397,12 +389,11 @@
         <div>إعداد المعلمة: فلانه بنت فلان</div>
         <p>لوحة تحكم معلمة مادة لغتي الجميلة - الصف السادس الابتدائي (وفق المنهج السعودي)</p>
 
-        <!-- أزرار تغيير خلفية الصفحة (متضمنة الثيم الملكي والأزرق وثيمات متنوعة) -->
+        <!-- أزرار تغيير خلفية الصفحة -->
         <div class="theme-switcher">
             <span style="font-size: 12px; margin-left: 5px;">🎨 المظهر:</span>
             <button class="theme-btn btn-theme-default" title="وردي أساسي" onclick="setTheme('theme-default')">🌸</button>
             <button class="theme-btn btn-theme-royal" title="الملكي الفاخر" onclick="setTheme('theme-royal')">👑</button>
-            <button class="theme-btn btn-theme-rose" title="توت الغروب" onclick="setTheme('theme-rose')">🌺</button>
             <button class="theme-btn btn-theme-emerald" title="أخضر زمردي" onclick="setTheme('theme-emerald')">🌿</button>
             <button class="theme-btn btn-theme-amber" title="ذهبي دافئ" onclick="setTheme('theme-amber')">⭐</button>
             <button class="theme-btn btn-theme-blue" title="أزرق هادئ" onclick="setTheme('theme-blue')">🌊</button>
