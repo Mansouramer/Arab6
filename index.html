@@ -317,7 +317,7 @@
 
     <div class="header">
         <h1>ابتدائية مصعب بن عمير</h1>
-        <div>إعداد المعلم: أبو يمن (المنسق / المعلم)</div>
+        <div>إعداد المعلم: خالد (أبو يمن)</div>
         <p>لوحة تحكم معلم اللغة العربية - الصف السادس الابتدائي (وفق المنهج السعودي)</p>
 
         <!-- أزرار تغيير خلفية الصفحة -->
@@ -356,6 +356,10 @@
             <div class="stat-card">
                 <h3>🛠️ إجمالي المشاريع</h3>
                 <p id="totalProjects">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>💬 رسائل الواتس المرسلة</h3>
+                <p id="totalMessagesSent">0</p>
             </div>
             <div class="stat-card">
                 <h3>✅ الدروس المنفذة</h3>
@@ -403,6 +407,7 @@
                             <th>📚 الواجبات</th>
                             <th>⭐ المهارات</th>
                             <th>🛠️ المشاريع</th>
+                            <th>💬 الرسائل</th>
                             <th>حذف</th>
                         </tr>
                     </thead>
@@ -454,6 +459,10 @@
                         <span>المشاريع</span>
                         <strong id="sdProjects">0</strong>
                     </div>
+                    <div class="detail-item">
+                        <span>رسائل الواتس</span>
+                        <strong id="sdMessages">0</strong>
+                    </div>
                 </div>
 
                 <!-- إشعار المهارات والدروس عبر الواتساب -->
@@ -466,7 +475,7 @@
                         </select>
                     </div>
                     <div id="lessonMsgPreview" class="preview-msg">اختر موضوع الدرس والمهارة أعلاه لتوليد نص الرسالة تلقائياً...</div>
-                    <a id="whatsappLessonBtn" href="#" target="_blank" class="whatsapp-btn">📲 إرسال مباشر لولي الأمر</a>
+                    <a id="whatsappLessonBtn" href="#" target="_blank" class="whatsapp-btn" onclick="incrementMessageCount()">📲 إرسال مباشر لولي الأمر</a>
                 </div>
 
                 <!-- رسائل الشكر والتحفيز -->
@@ -498,7 +507,7 @@
                         </select>
                     </div>
                     <div id="motivationMsgPreview" class="preview-msg">اختر الرسالة لعرض نص الشكر والتحفيز...</div>
-                    <a id="whatsappMotivationBtn" href="#" target="_blank" class="whatsapp-btn">🏆 إرسال رسالة التشجيع المختارة لولي الأمر</a>
+                    <a id="whatsappMotivationBtn" href="#" target="_blank" class="whatsapp-btn" onclick="incrementMessageCount()">🏆 إرسال رسالة التشجيع المختارة لولي الأمر</a>
                 </div>
             </div>
         </div>
@@ -525,7 +534,7 @@
     <div id="toast" class="toast">✅ تم حفظ البيانات تلقائياً!</div>
 
     <script>
-        const TEACHER_NAME = "أبو يمن";
+        const TEACHER_NAME = "خالد (أبو يمن)";
         const SCHOOL_NAME = "ابتدائية مصعب بن عمير";
 
         // --- 🛡️ حماية كود أدوات المطور والزر الأيمن ---
@@ -540,10 +549,10 @@
 
         function setTheme(themeName) {
             document.body.className = themeName;
-            localStorage.setItem('musab_theme_lugaty_grade6_v1', themeName);
+            localStorage.setItem('musab_theme_lugaty_grade6_v2', themeName);
         }
 
-        const savedTheme = localStorage.getItem('musab_theme_lugaty_grade6_v1') || 'theme-default';
+        const savedTheme = localStorage.getItem('musab_theme_lugaty_grade6_v2') || 'theme-default';
         document.body.className = savedTheme;
 
         // منهج لغتي الصف السادس الابتدائي الشامل (المنهج السعودي)
@@ -576,7 +585,7 @@
             { chapter: "الوحدة الثالثة: الوعي القرائي", title: "الوظيفة النحوية: إن وأخواتها", desc: "دخول إن وأخواتها (أن، كأن، لكن، ليت، لعل) على المبتدأ والخبر." }
         ];
 
-        let lessons = JSON.parse(localStorage.getItem('musab_custom_lessons_lugaty_grade6_v1')) || defaultLessons;
+        let lessons = JSON.parse(localStorage.getItem('musab_custom_lessons_lugaty_grade6_v2')) || defaultLessons;
 
         const motivationTemplates = {
             "1": "🌟 **فارس لغتي العربية الفصيحة** 🌟\nالمكرم ولي أمر الطالب المبدع، نود أن نشيد بفصاحته وتميزه الباهر في حصة لغة القرآن الكريم. نتمنى له دوام التوفيق والنجاح!",
@@ -596,18 +605,18 @@
             "15": "💖 **دعم مستمر وجهد مبارك** 💖\nرسالة شكر وتقدير لأسرة الطالب على الدعم والتحفيز المستمر الذي ينعكس إيجاباً على مستواها في مادة لغتي."
         };
 
-        let students = JSON.parse(localStorage.getItem('musab_students_lugaty_grade6_v1')) || [];
-        let lessonStatus = JSON.parse(localStorage.getItem('musab_lesson_status_lugaty_grade6_v1')) || {};
+        let students = JSON.parse(localStorage.getItem('musab_students_lugaty_grade6_v2')) || [];
+        let lessonStatus = JSON.parse(localStorage.getItem('musab_lesson_status_lugaty_grade6_v2')) || {};
 
         function saveAndRefresh() {
-            localStorage.setItem('musab_students_lugaty_grade6_v1', JSON.stringify(students));
+            localStorage.setItem('musab_students_lugaty_grade6_v2', JSON.stringify(students));
             render();
             showToast('✅ تم الحفظ تلقائياً في الجوال!');
         }
 
         function toggleLessonStatus(index) {
             lessonStatus[index] = !lessonStatus[index];
-            localStorage.setItem('musab_lesson_status_lugaty_grade6_v1', JSON.stringify(lessonStatus));
+            localStorage.setItem('musab_lesson_status_lugaty_grade6_v2', JSON.stringify(lessonStatus));
             renderLessons();
             showToast('🔄 تم تحديث حالة الدرس وحفظه!');
         }
@@ -622,7 +631,7 @@
             }
 
             lessons.push({ chapter: "إضافات المعلم", title: title, desc: desc || 'لا تتوفر تفاصيل إضافية' });
-            localStorage.setItem('musab_custom_lessons_lugaty_grade6_v1', JSON.stringify(lessons));
+            localStorage.setItem('musab_custom_lessons_lugaty_grade6_v2', JSON.stringify(lessons));
 
             document.getElementById('newLessonTitle').value = '';
             document.getElementById('newLessonDesc').value = '';
@@ -634,7 +643,7 @@
         function deleteLesson(index) {
             if (confirm('هل أنت متأكد من حذف هذا الدرس من المنهج؟')) {
                 lessons.splice(index, 1);
-                localStorage.setItem('musab_custom_lessons_lugaty_grade6_v1', JSON.stringify(lessons));
+                localStorage.setItem('musab_custom_lessons_lugaty_grade6_v2', JSON.stringify(lessons));
                 renderLessons();
                 showToast('🗑️ تم حذف الدرس بنجاح!');
             }
@@ -669,7 +678,8 @@
                 participation: 0,
                 homework: 0,
                 skills: 0,
-                projects: 0
+                projects: 0,
+                messages: 0
             });
 
             document.getElementById('studentName').value = '';
@@ -683,6 +693,14 @@
         function updateScore(index, field, value) {
             students[index][field] = Math.max(0, (students[index][field] || 0) + value);
             saveAndRefresh();
+        }
+
+        function incrementMessageCount() {
+            const index = document.getElementById('selectStudent').value;
+            if (index !== '') {
+                students[index].messages = (students[index].messages || 0) + 1;
+                saveAndRefresh();
+            }
         }
 
         function deleteStudent(index) {
@@ -708,7 +726,8 @@
                 "المشاركة": st.participation || 0,
                 "الواجبات": st.homework || 0,
                 "المهارات": st.skills || 0,
-                "المشاريع": st.projects || 0
+                "المشاريع": st.projects || 0,
+                "الرسائل المرسلة": st.messages || 0
             }));
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -751,7 +770,8 @@
                                         participation: Number(row["المشاركة"] || 0),
                                         homework: Number(row["الواجبات"] || 0),
                                         skills: Number(row["المهارات"] || 0),
-                                        projects: Number(row["المشاريع"] || 0)
+                                        projects: Number(row["المشاريع"] || 0),
+                                        messages: Number(row["الرسائل المرسلة"] || row["الرسائل"] || 0)
                                     });
                                 }
                             });
@@ -873,7 +893,7 @@
 
             const selectedFilter = document.getElementById('filterClass').value;
 
-            let totals = { skills: 0, participation: 0, homework: 0, absence: 0, projects: 0 };
+            let totals = { skills: 0, participation: 0, homework: 0, absence: 0, projects: 0, messages: 0 };
 
             students.forEach((st, i) => {
                 const stClass = st.studentClass || 'سادس/1';
@@ -883,6 +903,7 @@
                 totals.homework += st.homework || 0;
                 totals.absence += st.absence || 0;
                 totals.projects += st.projects || 0;
+                totals.messages += st.messages || 0;
 
                 if (selectedFilter !== 'ALL' && stClass !== selectedFilter) {
                     return;
@@ -918,6 +939,7 @@
                             ${st.projects || 0}
                             <button class="btn-action" onclick="updateScore(${i}, 'projects', -1)">-</button>
                         </td>
+                        <td><strong>${st.messages || 0}</strong></td>
                         <td>
                             <button class="btn-danger btn-action" onclick="deleteStudent(${i})">🗑️</button>
                         </td>
@@ -931,6 +953,7 @@
             document.getElementById('totalHomework').textContent = totals.homework;
             document.getElementById('totalAbsence').textContent = totals.absence;
             document.getElementById('totalProjects').textContent = totals.projects;
+            document.getElementById('totalMessagesSent').textContent = totals.messages;
 
             const select = document.getElementById('selectStudent');
             const selectedVal = select.value;
@@ -960,6 +983,7 @@
             document.getElementById('sdAbsence').textContent = st.absence || 0;
             document.getElementById('sdSkills').textContent = st.skills || 0;
             document.getElementById('sdProjects').textContent = st.projects || 0;
+            document.getElementById('sdMessages').textContent = st.messages || 0;
             document.getElementById('sdPhone').textContent = st.phone || 'لا يوجد';
 
             card.style.display = 'block';
