@@ -20,7 +20,7 @@
             --excel: #1d6f42;
         }
 
-        /* ثيمات ألوان الخلفية (تدرج لونين جذابين متناسقين متضمنة الثيم الملكي) */
+        /* ثيمات ألوان الخلفية (تدرج لونين جذابين متناسقين متضمنة الثيم الملكي والأزرق) */
         body.theme-default { 
             --bg: linear-gradient(135deg, #fdf2f8 0%, #fbcfe8 100%); 
             --card-bg: #ffffff; 
@@ -54,6 +54,13 @@
             --secondary: #d97706;
             --primary: #b45309;
         }
+        body.theme-blue { 
+            --bg: linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%); 
+            --card-bg: #ffffff; 
+            --text: #1e3a8a; 
+            --secondary: #2563eb;
+            --primary: #1d4ed8;
+        }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -71,12 +78,13 @@
             text-align: center;
             background: linear-gradient(135deg, var(--secondary), var(--primary));
             color: white;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             font-size: 14px;
             font-weight: bold;
             margin-bottom: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            line-height: 1.8;
         }
 
         .header {
@@ -129,6 +137,7 @@
         .btn-theme-rose { background: linear-gradient(135deg, #fb7185, #e11d48); border-color: #fff1f2; }
         .btn-theme-emerald { background: linear-gradient(135deg, #34d399, #059669); border-color: #065f46; }
         .btn-theme-amber { background: linear-gradient(135deg, #fbbf24, #d97706); border-color: #fffbeb; }
+        .btn-theme-blue { background: linear-gradient(135deg, #60a5fa, #2563eb); border-color: #1e3a8a; }
 
         .container { max-width: 1200px; margin: 0 auto; }
 
@@ -216,8 +225,9 @@
             text-align: center;
         }
 
-        body.theme-royal th, body.theme-royal td {
-            border-color: #6b21a8;
+        body.theme-royal th, body.theme-royal td,
+        body.theme-blue th, body.theme-blue td {
+            border-color: rgba(255,255,255,0.2);
         }
 
         th { background-color: rgba(0,0,0,0.05); color: var(--secondary); }
@@ -370,14 +380,16 @@
             font-size: 14px;
             opacity: 0.75;
             border-top: 1px solid rgba(0,0,0,0.1);
+            line-height: 1.8;
         }
     </style>
 </head>
 <body class="theme-default">
 
-    <!-- شريط الحقوق ووسيلة التواصل في البداية -->
+    <!-- شريط الحقوق ووسيلة التواصل في السطر التالي -->
     <div class="top-banner">
-        ﴿ هذا الجهد استغرق وقتاً وعناية، ولا أحلل نقله تجارياً أو نسخه دون إذن ﴾ &nbsp;|&nbsp; للتواصل والاتصال عبر واتساب: <a href="https://wa.me/966581015002" target="_blank" style="color: #ffff00; text-decoration: underline;">0581015002</a>
+        ﴿ هذا الجهد استغرق وقتاً وعناية، ولا أحلل نقله تجارياً أو نسخه دون إذن ﴾<br>
+        للتواصل والاتصال عبر واتساب: <a href="https://wa.me/966581015002" target="_blank" style="color: #ffff00; text-decoration: underline;">0581015002</a>
     </div>
 
     <div class="header">
@@ -385,7 +397,7 @@
         <div>إعداد المعلمة: فلانه بنت فلان</div>
         <p>لوحة تحكم معلمة مادة لغتي الجميلة - الصف السادس الابتدائي (وفق المنهج السعودي)</p>
 
-        <!-- أزرار تغيير خلفية الصفحة (متضمنة الثيم الملكي وثيمات متنوعة) -->
+        <!-- أزرار تغيير خلفية الصفحة (متضمنة الثيم الملكي والأزرق وثيمات متنوعة) -->
         <div class="theme-switcher">
             <span style="font-size: 12px; margin-left: 5px;">🎨 المظهر:</span>
             <button class="theme-btn btn-theme-default" title="وردي أساسي" onclick="setTheme('theme-default')">🌸</button>
@@ -393,6 +405,7 @@
             <button class="theme-btn btn-theme-rose" title="توت الغروب" onclick="setTheme('theme-rose')">🌺</button>
             <button class="theme-btn btn-theme-emerald" title="أخضر زمردي" onclick="setTheme('theme-emerald')">🌿</button>
             <button class="theme-btn btn-theme-amber" title="ذهبي دافئ" onclick="setTheme('theme-amber')">⭐</button>
+            <button class="theme-btn btn-theme-blue" title="أزرق هادئ" onclick="setTheme('theme-blue')">🌊</button>
         </div>
     </div>
 
@@ -595,9 +608,10 @@
             <div class="lessons-grid" id="mainLessonsContainer"></div>
         </div>
 
-        <!-- عبارة الحقوق المضافة -->
+        <!-- عبارة الحقوق المضافة في الأسفل -->
         <div class="footer-note">
-            ﴿ هذا الجهد استغرق وقتاً وعناية، ولا أحلل نقله تجارياً أو نسخه دون إذن ﴾ &nbsp;|&nbsp; واتساب: <a href="https://wa.me/966581015002" target="_blank" style="color: inherit; text-decoration: underline;">0581015002</a>
+            ﴿ هذا الجهد استغرق وقتاً وعناية، ولا أحلل نقله تجارياً أو نسخه دون إذن ﴾<br>
+            للتواصل واتساب: <a href="https://wa.me/966581015002" target="_blank" style="color: inherit; text-decoration: underline;">0581015002</a>
         </div>
 
     </div>
@@ -1122,4 +1136,3 @@
     </script>
 </body>
 </html>
-
