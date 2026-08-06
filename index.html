@@ -514,8 +514,8 @@
             line-height: 1.8;
         }
 
-        /* تنسيق نافذة الطباعة التخصصية */
-        #printableClassReport {
+        /* تنسيق نوافذ الطباعة المخفية افتراضياً */
+        #printableStudentReportContainer, #printableClassReport {
             display: none;
         }
 
@@ -523,10 +523,13 @@
             body * {
                 visibility: hidden;
             }
-            #printableStudentReport, #printableStudentReport * {
+            
+            /* طباعة تقرير الطالبة المفردة */
+            body.printing-student #printableStudentReportContainer,
+            body.printing-student #printableStudentReportContainer * {
                 visibility: visible;
             }
-            #printableStudentReport {
+            body.printing-student #printableStudentReportContainer {
                 position: absolute;
                 left: 0;
                 top: 0;
@@ -535,12 +538,15 @@
                 color: black !important;
                 padding: 20px;
                 box-shadow: none;
+                display: block !important;
             }
 
-            #printableClassReport, #printableClassReport * {
+            /* طباعة تقرير الصف الكامل */
+            body.printing-class #printableClassReport,
+            body.printing-class #printableClassReport * {
                 visibility: visible;
             }
-            #printableClassReport {
+            body.printing-class #printableClassReport {
                 position: absolute;
                 left: 0;
                 top: 0;
@@ -697,7 +703,7 @@
             </div>
 
             <div id="studentCard" style="display: none;">
-                <div id="printableStudentReport">
+                <div>
                     <h4>سجل الطالبة: <span id="selectedName"></span> (<span id="selectedClassBadge" class="class-badge"></span>)</h4>
                     <div class="student-details">
                         <div class="detail-item">
@@ -754,7 +760,7 @@
                                 <option value="2">2. تفوق ملحوظ في القراءة والإلقاء المعبر</option>
                                 <option value="3">3. دقة وإتقان في القواعد النحوية والاملاكية</option>
                                 <option value="4">4. مشاركة نشطة وفعالة في حصة لغتي</option>
-                                <option value="5">5. حصيلة لغوية وثقافية ممتازة</option>
+                                <option value="5">5. حصيلة لغوية والثقافية ممتازة</option>
                             </optgroup>
                             <optgroup label="📚 الواجبات والأنظمة الصفية">
                                 <option value="6">6. خط منسق وجميل وواجبات مرتبة بدقة</option>
@@ -821,6 +827,68 @@
 
     </div>
 
+    <!-- حاوية تقرير الطالبة المفردة المخصص للطباعة الرسمية -->
+    <div id="printableStudentReportContainer">
+        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px;">
+            <h2 style="margin: 0 0 5px 0; font-size: 22px;">المملكة العربية السعودية</h2>
+            <h3 style="margin: 0 0 5px 0; font-size: 18px;">وزارة التعليم</h3>
+            <h3 id="printStudentSchoolName" style="margin: 0 0 10px 0; font-size: 20px; color: #be185d;">الابتدائية الأولى بنات</h3>
+            <h4 style="margin: 0; font-size: 16px;">تقرير متابعة أداء الطالبة: <span id="printStudentName"></span></h4>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">الصف: <span id="printStudentClass"></span> - مادة لغتي الجميلة</p>
+        </div>
+
+        <div style="margin-bottom: 20px; font-size: 14px; display: flex; justify-content: space-between;">
+            <div><strong>معلمة المادة:</strong> <span id="printStudentTeacherName">فلانة بنت فلان</span></div>
+            <div><strong>تاريخ التقرير:</strong> <span id="printStudentDate"></span></div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px;">
+            <thead>
+                <tr style="background-color: #f3f4f6 !important;">
+                    <th style="border: 1px solid #333; padding: 10px;">عنصر المتابعة والتقييم</th>
+                    <th style="border: 1px solid #333; padding: 10px;">الدرجة أو المجموع التراكمي</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">✋ المشاركات الصفية الفعالة</td>
+                    <td id="printValParticipation" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">📚 الواجبات المنزلية والأنشطة</td>
+                    <td id="printValHomework" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">🔴 أيام الغياب</td>
+                    <td id="printValAbsence" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">⭐ المهارات اللغوية المكتسبة</td>
+                    <td id="printValSkills" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">🛠️ المشاريع والأنشطة الإثرائية</td>
+                    <td id="printValProjects" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">💬 إشعارات ورسائل التواصل المرسلة لولي الأمر</td>
+                    <td id="printValMessages" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px;">
+            <div>
+                <p><strong>معلمة المادة:</strong> فلانة بنت فلان</p>
+                <p><strong>التوقيع:</strong> ....................................</p>
+            </div>
+            <div style="text-align: left;">
+                <p><strong>مديرة المدرسة:</strong> ....................................</p>
+                <p><strong>التوقيع والختم:</strong> ....................................</p>
+            </div>
+        </div>
+    </div>
+
     <!-- حاوية تقرير الصف المخصص للطباعة الرسمية -->
     <div id="printableClassReport">
         <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px;">
@@ -855,7 +923,7 @@
 
         <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px;">
             <div>
-                <p><strong>معلمة المادة:</strong> العبارة / ....................................</p>
+                <p><strong>معلمة المادة:</strong> فلانة بنت فلان</p>
                 <p><strong>التوقيع:</strong> ....................................</p>
             </div>
             <div style="text-align: left;">
@@ -894,7 +962,7 @@
         });
 
         function setTheme(themeName) {
-            document.body.className = themeName;
+            document.body.className = themeName + ' ' + (document.body.className.includes('printing-') ? document.body.className.match(/printing-\S+/)[0] : '');
             localStorage.setItem('awwal_primary_ughati_v2', themeName);
         }
 
@@ -943,7 +1011,7 @@
         const motivationTemplates = {
             "1": "🌟 **أديبة المستقبل المتميزة** 🌟\nعزيزي وليّ الأمر، نفخر اليوم بتميز ابنتكم وتألقها في حصة لغتي بمشاركتها الفعالة وإلقائها الجميل. بوركت جهودكم!",
             "2": "📖 **قراءة وإلقاء معبر ورائع** 📖\nعزيزي وليّ الأمر، أظهرت ابنتكم اليوم قراءة ممتازة وفهماً عميقاً للنصوص والآيات والمفاهيم اللغوية. أحسنت صنعاً!",
-            "3": "✍️ **دقة وإتقان في القواعد النحوية والإملائية** ✍️\nعزيزي وليّ الأمر، تميزت ابنتكم اليوم بمهارات إملائية ونحوية دقيقة وصحيحة. بارك الله في جهودها!",
+            "3": "✍️ **دقة وإتقان في القواعد النحوية والإملائية** ✍️\nعزيزي وليّ الأمر، تميزت ابنتكم اليوم بمهارات إملائية والنحوية دقيقة وصحيحة. بارك الله في جهودها!",
             "4": "✋ **مشاركة نشطة وتفاعل متميز** ✋\nعزيزي وليّ الأمر، تميزت ابنتكم اليوم بحرصها العالي ومشاركتها النشطة وإجاباتها الموفقة داخل الفصل.",
             "5": "🧠 **حصيلة لغوية وثقافية ممتازة** 🧠\nعزيزي وليّ الأمر، أبدعت ابنتكم اليوم في التعبير السليم وتوظيف المفردات والمصطلحات اللغوية بشكل دقيق. مبروك لها!",
             "6": "📝 **خط منسق وجميل وواجبات مرتبة** 📝\nعزيزي وليّ الأمر، نشكر لكم متابعتكم المنزلية الواعية. لقد كان واجب ابنتكم اليوم منظماً، دقيقاً، وخطها في غاية الجمال والترتيب.",
@@ -1121,6 +1189,36 @@
             }
         }
 
+        function printStudentReport() {
+            const stIndex = selectedStudentIndex;
+            if (stIndex === '' || !students[stIndex]) {
+                alert('يرجى اختيار طالبة أولاً من قسم الاستعلام والتتبع لطباعة تقريرها.');
+                return;
+            }
+
+            const st = students[stIndex];
+            document.getElementById('printStudentName').textContent = st.name;
+            document.getElementById('printStudentClass').textContent = st.studentClass || 'سادس/1';
+            document.getElementById('printStudentSchoolName').textContent = SCHOOL_NAME;
+            document.getElementById('printStudentTeacherName').textContent = TEACHER_NAME;
+            
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-SA') + ' هـ';
+            document.getElementById('printStudentDate').textContent = dateStr;
+
+            document.getElementById('printValParticipation').textContent = st.participation || 0;
+            document.getElementById('printValHomework').textContent = st.homework || 0;
+            document.getElementById('printValAbsence').textContent = st.absence || 0;
+            document.getElementById('printValSkills').textContent = st.skills || 0;
+            document.getElementById('printValProjects').textContent = st.projects || 0;
+            document.getElementById('printValMessages').textContent = st.messages || 0;
+
+            document.body.classList.remove('printing-class');
+            document.body.classList.add('printing-student');
+            window.print();
+            document.body.classList.remove('printing-student');
+        }
+
         function printClassReport(className, event) {
             if (event) event.stopPropagation();
 
@@ -1161,7 +1259,10 @@
                 `;
             });
 
+            document.body.classList.remove('printing-student');
+            document.body.classList.add('printing-class');
             window.print();
+            document.body.classList.remove('printing-class');
         }
 
         function exportExcel() {
@@ -1598,10 +1699,6 @@
             return p;
         }
 
-        function printStudentReport() {
-            window.print();
-        }
-
         function sendFullReportWhatsApp() {
             const stIndex = selectedStudentIndex;
             if (stIndex === '' || !students[stIndex]) return;
@@ -1761,4 +1858,3 @@
     </script>
 </body>
 </html>
-
