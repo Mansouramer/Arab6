@@ -649,7 +649,7 @@
 
         <!-- قسم اختبارات الفترة الأولى والفترة الثانية والتحليل -->
         <div class="section-card">
-            <h3>📊 رصد وتحليل اختبارات الفترة الأولى والفترة الثانية 📝</h3>
+            <h3>📊 رصد وتحليل اختبارات الفترة الأولى والفترة الثانية (من ٢٠) 📝</h3>
             <div class="form-row">
                 <select id="examClassSelect" onchange="renderExamsTable()">
                     <option value="">-- اختر الصف الدراسي لعرض وسجل الاختبارات --</option>
@@ -669,11 +669,11 @@
                 <h5>📈 مؤشرات التحليل الإحصائي لنتائج الصف المحدد</h5>
                 <div class="student-details" style="margin: 10px 0;">
                     <div class="detail-item">
-                        <span>متوسط اختبار الفترة 1</span>
+                        <span>متوسط اختبار الفترة 1 (من 20)</span>
                         <strong id="avgExam1">0</strong>
                     </div>
                     <div class="detail-item">
-                        <span>متوسط اختبار الفترة 2</span>
+                        <span>متوسط اختبار الفترة 2 (من 20)</span>
                         <strong id="avgExam2">0</strong>
                     </div>
                 </div>
@@ -685,8 +685,8 @@
                         <tr>
                             <th>اسم الطالبة</th>
                             <th>🏫 الصف</th>
-                            <th>📝 اختبار الفترة الأولى</th>
-                            <th>📝 اختبار الفترة الثانية</th>
+                            <th>📝 اختبار الفترة الأولى (من 20)</th>
+                            <th>📝 اختبار الفترة الثانية (من 20)</th>
                             <th>📤 إرسال النتيجة لولي الأمر</th>
                         </tr>
                     </thead>
@@ -954,6 +954,8 @@
         function updateExamScore(index, examField, val) {
             let num = parseFloat(val);
             if (isNaN(num)) num = 0;
+            if (num > 20) num = 20; // الحد الأقصى 20
+            if (num < 0) num = 0;
             students[index][examField] = num;
             localStorage.setItem('awwal_students_ughati_v2', JSON.stringify(students));
             renderExamsTable();
@@ -970,10 +972,8 @@
 
             const headerInfo = `🏫 المدرسة: ${SCHOOL_NAME}\n👩‍🏫 معلمة المادة: ${TEACHER_NAME}\n\n`;
             const msg = `${headerInfo}📋 **نتيجة اختبارات مادة لغتي الجميلة**\nالطالبة: ${st.name} (${st.studentClass || ''})\n\n` +
-                          `📝 اختبار الفترة الأولى: **${st.exam1 !== undefined ? st.exam1 : '-'}**\n` +
-                          `📌 الدرجة المعتمدة لاختبار الفترة 1: **${st.exam1Max !== undefined ? st.exam1Max : '-'}**\n` +
-                          `📝 اختبار الفترة الثانية: **${st.exam2 !== undefined ? st.exam2 : '-'}**\n` +
-                          `📌 الدرجة المعتمدة لاختبار الفترة 2: **${st.exam2Max !== undefined ? st.exam2Max : '-'}**\n\n` +
+                          `📝 اختبار الفترة الأولى: **${st.exam1 !== undefined ? st.exam1 : '-'} / 20**\n` +
+                          `📝 اختبار الفترة الثانية: **${st.exam2 !== undefined ? st.exam2 : '-'} / 20**\n\n` +
                           `شكراً لمتابعتكم المستمرة ودعمكم الدائم لمسيرة ابنتنا التعليمية.`;
 
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
@@ -1011,9 +1011,7 @@
                 const st = item.st;
                 const i = item.originalIndex;
                 const e1 = st.exam1 !== undefined ? st.exam1 : '';
-                const e1Max = st.exam1Max !== undefined ? st.exam1Max : '';
                 const e2 = st.exam2 !== undefined ? st.exam2 : '';
-                const e2Max = st.exam2Max !== undefined ? st.exam2Max : '';
 
                 if (st.exam1 !== undefined && st.exam1 !== '') {
                     sum1 += Number(st.exam1);
@@ -1029,20 +1027,18 @@
                         <td><strong>${st.name}</strong></td>
                         <td><span class="class-badge">${selectedCls}</span></td>
                         <td>
-                            <input type="number" step="0.5" value="${e1}" onchange="updateExamScore(${i}, 'exam1', this.value)" style="width: 80px; text-align: center; display: block; margin: 0 auto 4px auto;" placeholder="الدرجة">
-                            <input type="number" step="0.5" value="${e1Max}" onchange="updateExamScore(${i}, 'exam1Max', this.value)" style="width: 80px; text-align: center; display: block; margin: 0 auto; font-size: 11px; opacity: 0.85;" placeholder="الدرجة المعتمدة">
+                            <input type="number" step="0.5" max="20" min="0" value="${e1}" onchange="updateExamScore(${i}, 'exam1', this.value)" style="width: 90px; text-align: center; display: block; margin: 0 auto;" placeholder="من 20">
                         </td>
                         <td>
-                            <input type="number" step="0.5" value="${e2}" onchange="updateExamScore(${i}, 'exam2', this.value)" style="width: 80px; text-align: center; display: block; margin: 0 auto 4px auto;" placeholder="الدرجة">
-                            <input type="number" step="0.5" value="${e2Max}" onchange="updateExamScore(${i}, 'exam2Max', this.value)" style="width: 80px; text-align: center; display: block; margin: 0 auto; font-size: 11px; opacity: 0.85;" placeholder="الدرجة المعتمدة">
+                            <input type="number" step="0.5" max="20" min="0" value="${e2}" onchange="updateExamScore(${i}, 'exam2', this.value)" style="width: 90px; text-align: center; display: block; margin: 0 auto;" placeholder="من 20">
                         </td>
                         <td><button class="whatsapp-btn" style="padding: 6px 12px; margin: 0; font-size: 13px;" onclick="sendExamWhatsApp(${i})">📤 إرسال النتيجة</button></td>
                     </tr>
                 `;
             });
 
-            document.getElementById('avgExam1').textContent = count1 > 0 ? (sum1 / count1).toFixed(1) : '0';
-            document.getElementById('avgExam2').textContent = count2 > 0 ? (sum2 / count2).toFixed(1) : '0';
+            document.getElementById('avgExam1').textContent = count1 > 0 ? (sum1 / count1).toFixed(1) + ' / 20' : '0 / 20';
+            document.getElementById('avgExam2').textContent = count2 > 0 ? (sum2 / count2).toFixed(1) + ' / 20' : '0 / 20';
             
             analysisBox.style.display = 'block';
             printBtn.style.display = 'inline-block';
@@ -1068,8 +1064,8 @@
                 }
             });
 
-            const avg1 = count1 > 0 ? (sum1 / count1).toFixed(1) : '0';
-            const avg2 = count2 > 0 ? (sum2 / count2).toFixed(1) : '0';
+            const avg1 = count1 > 0 ? (sum1 / count1).toFixed(1) + ' / 20' : '0 / 20';
+            const avg2 = count2 > 0 ? (sum2 / count2).toFixed(1) + ' / 20' : '0 / 20';
             const now = new Date();
             const dateStr = now.toLocaleDateString('ar-SA') + ' هـ';
 
@@ -1104,8 +1100,8 @@
                 </div>
 
                 <div class="stats-box">
-                    <div><strong>متوسط الفترة 1:</strong><br>${avg1}</div>
-                    <div><strong>متوسط الفترة 2:</strong><br>${avg2}</div>
+                    <div><strong>متوسط الفترة الأولى:</strong><br>${avg1}</div>
+                    <div><strong>متوسط الفترة الثانية:</strong><br>${avg2}</div>
                 </div>
 
                 <table>
@@ -1113,25 +1109,23 @@
                         <tr>
                             <th>م</th>
                             <th>اسم الطالبة</th>
-                            <th>الفترة الأولى (الدرجة / المعتمدة)</th>
-                            <th>الفترة الثانية (الدرجة / المعتمدة)</th>
+                            <th>الفترة الأولى (من 20)</th>
+                            <th>الفترة الثانية (من 20)</th>
                         </tr>
                     </thead>
                     <tbody>
             `);
 
             classStudents.forEach((st, idx) => {
-                const e1Str = st.exam1 !== undefined && st.exam1 !== '' ? st.exam1 : '-';
-                const e1MaxStr = st.exam1Max !== undefined && st.exam1Max !== '' ? ` (المعتمدة: ${st.exam1Max})` : '';
-                const e2Str = st.exam2 !== undefined && st.exam2 !== '' ? st.exam2 : '-';
-                const e2MaxStr = st.exam2Max !== undefined && st.exam2Max !== '' ? ` (المعتمدة: ${st.exam2Max})` : '';
+                const e1Str = st.exam1 !== undefined && st.exam1 !== '' ? st.exam1 + ' / 20' : '-';
+                const e2Str = st.exam2 !== undefined && st.exam2 !== '' ? st.exam2 + ' / 20' : '-';
 
                 printWindow.document.write(`
                     <tr>
                         <td>${idx + 1}</td>
                         <td class="text-right"><strong>${st.name}</strong></td>
-                        <td>${e1Str}${e1MaxStr}</td>
-                        <td>${e2Str}${e2MaxStr}</td>
+                        <td>${e1Str}</td>
+                        <td>${e2Str}</td>
                     </tr>
                 `);
             });
@@ -1244,9 +1238,7 @@
                 projects: 0,
                 messages: 0,
                 exam1: undefined,
-                exam1Max: undefined,
-                exam2: undefined,
-                exam2Max: undefined
+                exam2: undefined
             });
 
             document.getElementById('studentName').value = '';
@@ -1354,8 +1346,8 @@
                         <tr><td class="text-right">🔴 أيام الغياب</td><td><strong>${st.absence || 0}</strong></td></tr>
                         <tr><td class="text-right">⭐ المهارات اللغوية المكتسبة</td><td><strong>${st.skills || 0}</strong></td></tr>
                         <tr><td class="text-right">🛠️ المشاريع والأنشطة الإثرائية</td><td><strong>${st.projects || 0}</strong></td></tr>
-                        <tr><td class="text-right">📝 اختبار الفترة الأولى</td><td><strong>${st.exam1 !== undefined ? st.exam1 : '-'}${st.exam1Max !== undefined ? ' (المعتمدة: ' + st.exam1Max + ')' : ''}</strong></td></tr>
-                        <tr><td class="text-right">📝 اختبار الفترة الثانية</td><td><strong>${st.exam2 !== undefined ? st.exam2 : '-'}${st.exam2Max !== undefined ? ' (المعتمدة: ' + st.exam2Max + ')' : ''}</strong></td></tr>
+                        <tr><td class="text-right">📝 اختبار الفترة الأولى (من 20)</td><td><strong>${st.exam1 !== undefined ? st.exam1 + ' / 20' : '-'}</strong></td></tr>
+                        <tr><td class="text-right">📝 اختبار الفترة الثانية (من 20)</td><td><strong>${st.exam2 !== undefined ? st.exam2 + ' / 20' : '-'}</strong></td></tr>
                     </tbody>
                 </table>
 
@@ -1434,18 +1426,16 @@
                             <th>المشاركة</th>
                             <th>الواجبات</th>
                             <th>المهارات</th>
-                            <th>فترة 1 (المعتمدة)</th>
-                            <th>فترة 2 (المعتمدة)</th>
+                            <th>فترة 1 (من 20)</th>
+                            <th>فترة 2 (من 20)</th>
                         </tr>
                     </thead>
                     <tbody>
             `);
 
             classStudents.forEach((st, idx) => {
-                const e1Str = st.exam1 !== undefined ? st.exam1 : '-';
-                const e1MaxStr = st.exam1Max !== undefined ? ` / ${st.exam1Max}` : '';
-                const e2Str = st.exam2 !== undefined ? st.exam2 : '-';
-                const e2MaxStr = st.exam2Max !== undefined ? ` / ${st.exam2Max}` : '';
+                const e1Str = st.exam1 !== undefined ? st.exam1 + ' / 20' : '-';
+                const e2Str = st.exam2 !== undefined ? st.exam2 + ' / 20' : '-';
 
                 printWindow.document.write(`
                     <tr>
@@ -1456,8 +1446,8 @@
                         <td>${st.participation || 0}</td>
                         <td>${st.homework || 0}</td>
                         <td>${st.skills || 0}</td>
-                        <td>${e1Str}${e1MaxStr}</td>
-                        <td>${e2Str}${e2MaxStr}</td>
+                        <td>${e1Str}</td>
+                        <td>${e2Str}</td>
                     </tr>
                 `);
             });
@@ -1500,10 +1490,8 @@
                 "Homework": st.homework || 0,
                 "Skills": st.skills || 0,
                 "Projects": st.projects || 0,
-                "Exam 1": st.exam1 !== undefined ? st.exam1 : '',
-                "Exam 1 Max": st.exam1Max !== undefined ? st.exam1Max : '',
-                "Exam 2": st.exam2 !== undefined ? st.exam2 : '',
-                "Exam 2 Max": st.exam2Max !== undefined ? st.exam2Max : '',
+                "Exam 1 (Out of 20)": st.exam1 !== undefined ? st.exam1 : '',
+                "Exam 2 (Out of 20)": st.exam2 !== undefined ? st.exam2 : '',
                 "Messages Sent": st.messages || 0
             }));
 
@@ -1542,6 +1530,9 @@
                             if (!name || name === "" || name === "undefined" || name === "null") return;
                             if (!rawClass || rawClass === "" || rawClass === "undefined" || rawClass === "null") return;
 
+                            const valExam1 = row["Exam 1 (Out of 20)"] !== undefined && row["Exam 1 (Out of 20)"] !== "" ? Number(row["Exam 1 (Out of 20)"]) : (row["Exam 1"] !== undefined && row["Exam 1"] !== "" ? Number(row["Exam 1"]) : undefined);
+                            const valExam2 = row["Exam 2 (Out of 20)"] !== undefined && row["Exam 2 (Out of 20)"] !== "" ? Number(row["Exam 2 (Out of 20)"]) : (row["Exam 2"] !== undefined && row["Exam 2"] !== "" ? Number(row["Exam 2"]) : undefined);
+
                             students.push({
                                 id: Date.now() + Math.random(),
                                 name: name,
@@ -1552,10 +1543,8 @@
                                 homework: Number(row["Homework"] || row["الواجبات"] || 0),
                                 skills: Number(row["Skills"] || row["المهارات"] || 0),
                                 projects: Number(row["Projects"] || row["المشاريع"] || 0),
-                                exam1: row["Exam 1"] !== undefined && row["Exam 1"] !== "" ? Number(row["Exam 1"]) : undefined,
-                                exam1Max: row["Exam 1 Max"] !== undefined && row["Exam 1 Max"] !== "" ? Number(row["Exam 1 Max"]) : undefined,
-                                exam2: row["Exam 2"] !== undefined && row["Exam 2"] !== "" ? Number(row["Exam 2"]) : undefined,
-                                exam2Max: row["Exam 2 Max"] !== undefined && row["Exam 2 Max"] !== "" ? Number(row["Exam 2 Max"]) : undefined,
+                                exam1: valExam1 !== undefined ? Math.min(20, Math.max(0, valExam1)) : undefined,
+                                exam2: valExam2 !== undefined ? Math.min(20, Math.max(0, valExam2)) : undefined,
                                 messages: Number(row["Messages Sent"] || row["الرسائل"] || 0)
                             });
                             importedCount++;
@@ -1933,8 +1922,8 @@
                               `🔴 أيام الغياب: ${st.absence || 0}\n` +
                               `⭐ المهارات اللغوية: ${st.skills || 0}\n` +
                               `🛠️ المشاريع: ${st.projects || 0}\n` +
-                              `📝 اختبار الفترة 1: ${st.exam1 !== undefined ? st.exam1 : '-'}${st.exam1Max !== undefined ? ' (المعتمدة: ' + st.exam1Max + ')' : ''}\n` +
-                              `📝 اختبار الفترة 2: ${st.exam2 !== undefined ? st.exam2 : '-'}${st.exam2Max !== undefined ? ' (المعتمدة: ' + st.exam2Max + ')' : ''}\n\n` +
+                              `📝 اختبار الفترة 1: ${st.exam1 !== undefined ? st.exam1 + ' / 20' : '-'}\n` +
+                              `📝 اختبار الفترة 2: ${st.exam2 !== undefined ? st.exam2 + ' / 20' : '-'}\n\n` +
                               `شكراً لمتابعتكم المستمرة ودعمكم الدائم لمسيرة ابنتنا التعليمية.`;
 
             const phone = getCleanPhone(st.phone);
