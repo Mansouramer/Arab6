@@ -203,6 +203,7 @@
         .btn-info { background: var(--info); }
         .btn-warning { background: var(--warning); }
         .btn-excel { background: var(--excel); }
+        .btn-print { background: #4b5563; }
         .btn-action { padding: 4px 8px; font-size: 12px; margin: 0 2px; }
 
         .classes-query-grid {
@@ -511,6 +512,26 @@
             border-top: 1px solid rgba(0,0,0,0.1);
             line-height: 1.8;
         }
+
+        /* تنسيق نافذة الطباعة التخصصية */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableStudentReport, #printableStudentReport * {
+                visibility: visible;
+            }
+            #printableStudentReport {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+                color: black !important;
+                padding: 20px;
+                box-shadow: none;
+            }
+        }
     </style>
 </head>
 <body class="theme-default">
@@ -656,32 +677,40 @@
             </div>
 
             <div id="studentCard" style="display: none;">
-                <h4>سجل الطالبة: <span id="selectedName"></span> (<span id="selectedClassBadge" class="class-badge"></span>)</h4>
-                <div class="student-details">
-                    <div class="detail-item">
-                        <span>المشاركات</span>
-                        <strong id="sdParticipation">0</strong>
+                <div id="printableStudentReport">
+                    <h4>سجل الطالبة: <span id="selectedName"></span> (<span id="selectedClassBadge" class="class-badge"></span>)</h4>
+                    <div class="student-details">
+                        <div class="detail-item">
+                            <span>المشاركات</span>
+                            <strong id="sdParticipation">0</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>الواجبات</span>
+                            <strong id="sdHomework">0</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>أيام الغياب</span>
+                            <strong id="sdAbsence">0</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>المهارات</span>
+                            <strong id="sdSkills">0</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>المشاريع</span>
+                            <strong id="sdProjects">0</strong>
+                        </div>
+                        <div class="detail-item">
+                            <span>رسائل الواتس</span>
+                            <strong id="sdMessages">0</strong>
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <span>الواجبات</span>
-                        <strong id="sdHomework">0</strong>
-                    </div>
-                    <div class="detail-item">
-                        <span>أيام الغياب</span>
-                        <strong id="sdAbsence">0</strong>
-                    </div>
-                    <div class="detail-item">
-                        <span>المهارات</span>
-                        <strong id="sdSkills">0</strong>
-                    </div>
-                    <div class="detail-item">
-                        <span>المشاريع</span>
-                        <strong id="sdProjects">0</strong>
-                    </div>
-                    <div class="detail-item">
-                        <span>رسائل الواتس</span>
-                        <strong id="sdMessages">0</strong>
-                    </div>
+                </div>
+
+                <!-- أزرار الإجراءات والطباعة السريعة -->
+                <div class="form-row" style="margin-top: 15px;">
+                    <button class="btn-print" onclick="printStudentReport()">🖨️ طباعة تقرير الطالبة الرسمي</button>
+                    <button class="whatsapp-btn" onclick="sendFullReportWhatsApp()" style="border: none; cursor: pointer; margin-top: 0;">📤 إرسال التقرير الشامل لولي الأمر عبر واتساب</button>
                 </div>
 
                 <div class="sub-box">
@@ -1079,12 +1108,10 @@
                             const name = String(row["Student Name"] || row["اسم الطالبة"] || row["Name"] || "").trim();
                             const rawClass = String(row["Class"] || row["الصف"] || row["الفصل"] || "").trim();
 
-                            // تجاهل الصفوف الفارغة أو التي لا تحتوي على اسم طالبة صالح
                             if (!name || name === "" || name === "undefined" || name === "null") {
                                 return;
                             }
 
-                            // تجاهل الفصول الفارغة أو غير المعرفة (عدم خلق فصول افتراضية عشوائية)
                             if (!rawClass || rawClass === "" || rawClass === "undefined" || rawClass === "null") {
                                 return;
                             }
@@ -1459,6 +1486,34 @@
             let p = String(phone).replace(/\D/g, '');
             if (p.startsWith('05')) p = '966' + p.substring(1);
             return p;
+        }
+
+        function printStudentReport() {
+            window.print();
+        }
+
+        function sendFullReportWhatsApp() {
+            const stIndex = selectedStudentIndex;
+            if (stIndex === '' || !students[stIndex]) return;
+
+            const st = students[stIndex];
+            const headerInfo = `🏫 المدرسة: ${SCHOOL_NAME}\n👩‍🏫 معلمة المادة: ${TEACHER_NAME}\n\n`;
+            const reportMsg = `${headerInfo}📋 **التقرير الشامل لأداء الطالبة:** ${st.name} (${st.studentClass || ''})\n\n` +
+                              `✋ المشاركات: ${st.participation || 0}\n` +
+                              `📚 الواجبات: ${st.homework || 0}\n` +
+                              `🔴 أيام الغياب: ${st.absence || 0}\n` +
+                              `⭐ المهارات اللغوية: ${st.skills || 0}\n` +
+                              `🛠️ المشاريع: ${st.projects || 0}\n\n` +
+                              `شكراً لمتابعتكم المستمرة ودعمكم الدائم لمسيرة ابنتنا التعليمية.`;
+
+            const phone = getCleanPhone(st.phone);
+            if (phone) {
+                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(reportMsg)}`, '_blank');
+                st.messages = (st.messages || 0) + 1;
+                saveAndRefresh();
+            } else {
+                alert('رقم جوال ولي الأمر غير متوفر أو غير صالح.');
+            }
         }
 
         function updateLessonMsg() {
