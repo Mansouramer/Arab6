@@ -513,51 +513,6 @@
             border-top: 1px solid rgba(0,0,0,0.1);
             line-height: 1.8;
         }
-
-        /* تنسيق نوافذ الطباعة المخفية افتراضياً */
-        #printableStudentReportContainer, #printableClassReport {
-            display: none;
-        }
-
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            
-            /* طباعة تقرير الطالبة المفردة */
-            body.printing-student #printableStudentReportContainer,
-            body.printing-student #printableStudentReportContainer * {
-                visibility: visible;
-            }
-            body.printing-student #printableStudentReportContainer {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                background: white !important;
-                color: black !important;
-                padding: 20px;
-                box-shadow: none;
-                display: block !important;
-            }
-
-            /* طباعة تقرير الصف الكامل */
-            body.printing-class #printableClassReport,
-            body.printing-class #printableClassReport * {
-                visibility: visible;
-            }
-            body.printing-class #printableClassReport {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                background: white !important;
-                color: black !important;
-                padding: 20px;
-                box-shadow: none;
-                display: block !important;
-            }
-        }
     </style>
 </head>
 <body class="theme-default">
@@ -827,112 +782,6 @@
 
     </div>
 
-    <!-- حاوية تقرير الطالبة المفردة المخصص للطباعة الرسمية -->
-    <div id="printableStudentReportContainer">
-        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px;">
-            <h2 style="margin: 0 0 5px 0; font-size: 22px;">المملكة العربية السعودية</h2>
-            <h3 style="margin: 0 0 5px 0; font-size: 18px;">وزارة التعليم</h3>
-            <h3 id="printStudentSchoolName" style="margin: 0 0 10px 0; font-size: 20px; color: #be185d;">الابتدائية الأولى بنات</h3>
-            <h4 style="margin: 0; font-size: 16px;">تقرير متابعة أداء الطالبة: <span id="printStudentName"></span></h4>
-            <p style="margin: 5px 0 0 0; font-size: 14px;">الصف: <span id="printStudentClass"></span> - مادة لغتي الجميلة</p>
-        </div>
-
-        <div style="margin-bottom: 20px; font-size: 14px; display: flex; justify-content: space-between;">
-            <div><strong>معلمة المادة:</strong> <span id="printStudentTeacherName">فلانة بنت فلان</span></div>
-            <div><strong>تاريخ التقرير:</strong> <span id="printStudentDate"></span></div>
-        </div>
-
-        <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px;">
-            <thead>
-                <tr style="background-color: #f3f4f6 !important;">
-                    <th style="border: 1px solid #333; padding: 10px;">عنصر المتابعة والتقييم</th>
-                    <th style="border: 1px solid #333; padding: 10px;">الدرجة أو المجموع التراكمي</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">✋ المشاركات الصفية الفعالة</td>
-                    <td id="printValParticipation" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">📚 الواجبات المنزلية والأنشطة</td>
-                    <td id="printValHomework" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">🔴 أيام الغياب</td>
-                    <td id="printValAbsence" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">⭐ المهارات اللغوية المكتسبة</td>
-                    <td id="printValSkills" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">🛠️ المشاريع والأنشطة الإثرائية</td>
-                    <td id="printValProjects" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid #333; padding: 10px; text-align: right;">💬 إشعارات ورسائل التواصل المرسلة لولي الأمر</td>
-                    <td id="printValMessages" style="border: 1px solid #333; padding: 10px; text-align: center; font-weight: bold;">0</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px;">
-            <div>
-                <p><strong>معلمة المادة:</strong> فلانة بنت فلان</p>
-                <p><strong>التوقيع:</strong> ....................................</p>
-            </div>
-            <div style="text-align: left;">
-                <p><strong>مديرة المدرسة:</strong> ....................................</p>
-                <p><strong>التوقيع والختم:</strong> ....................................</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- حاوية تقرير الصف المخصص للطباعة الرسمية -->
-    <div id="printableClassReport">
-        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px;">
-            <h2 style="margin: 0 0 5px 0; font-size: 22px;">المملكة العربية السعودية</h2>
-            <h3 style="margin: 0 0 5px 0; font-size: 18px;">وزارة التعليم</h3>
-            <h3 id="printSchoolName" style="margin: 0 0 10px 0; font-size: 20px; color: #be185d;">الابتدائية الأولى بنات</h3>
-            <h4 style="margin: 0; font-size: 16px;">تقرير متابعة أداء طالبات الصف: <span id="printClassName"></span></h4>
-            <p style="margin: 5px 0 0 0; font-size: 14px;">مادة لغتي الجميلة - الصف السادس الابتدائي</p>
-        </div>
-
-        <div style="margin-bottom: 15px; font-size: 14px; display: flex; justify-content: space-between;">
-            <div><strong>معلمة المادة:</strong> <span id="printTeacherName">فلانة بنت فلان</span></div>
-            <div><strong>تاريخ التقرير:</strong> <span id="printDate"></span></div>
-        </div>
-
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;">
-            <thead>
-                <tr style="background-color: #f3f4f6 !important;">
-                    <th style="border: 1px solid #333; padding: 8px;">م</th>
-                    <th style="border: 1px solid #333; padding: 8px;">اسم الطالبة</th>
-                    <th style="border: 1px solid #333; padding: 8px;">رقم الجوال</th>
-                    <th style="border: 1px solid #333; padding: 8px;">الغياب</th>
-                    <th style="border: 1px solid #333; padding: 8px;">المشاركة</th>
-                    <th style="border: 1px solid #333; padding: 8px;">الواجبات</th>
-                    <th style="border: 1px solid #333; padding: 8px;">المهارات</th>
-                    <th style="border: 1px solid #333; padding: 8px;">المشاريع</th>
-                </tr>
-            </thead>
-            <tbody id="printClassTableBody">
-            </tbody>
-        </table>
-
-        <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px;">
-            <div>
-                <p><strong>معلمة المادة:</strong> فلانة بنت فلان</p>
-                <p><strong>التوقيع:</strong> ....................................</p>
-            </div>
-            <div style="text-align: left;">
-                <p><strong>مديرة المدرسة:</strong> ....................................</p>
-                <p><strong>التوقيع والختم:</strong> ....................................</p>
-            </div>
-        </div>
-    </div>
-
     <div id="toast" class="toast">✅ تم حفظ البيانات تلقائياً!</div>
 
     <script>
@@ -962,7 +811,7 @@
         });
 
         function setTheme(themeName) {
-            document.body.className = themeName + ' ' + (document.body.className.includes('printing-') ? document.body.className.match(/printing-\S+/)[0] : '');
+            document.body.className = themeName;
             localStorage.setItem('awwal_primary_ughati_v2', themeName);
         }
 
@@ -979,7 +828,7 @@
             { chapter: "الوحدة الأولى: قدوات ومثُل عليا", title: "التواصل اللفظي والكتابي: إبداء الرأي والتلخيص", desc: "مهارات التعبير الشفهي والكتابي وإبداء الرأي الشخصي حول النص." },
 
             { chapter: "الوحدة الثانية: الوعي القرائي", title: "مدخل الوحدة ونصوص الاستماع", desc: "استكشاف أهمية القراءة والمطالعة الحرة في بناء الفكر والمعرفة." },
-            { chapter: "الوحدة الثانية: الوعي القرائي", title: "الفهم القرائي:صناع التقدم / القراءة حياة", desc: "تحليل النصوص القرائية المرتبطة بأهمية الكتاب ومصادر المعرفة الحديثة." },
+            { chapter: "الوحدة الثانية: الوعي القرائي", title: "الفهم القرائي:صناع التقدم / القراءة حياة", desc: "تحليل النصوص القرائية المرتبطة أهمية الكتاب ومصادر المعرفة الحديثة." },
             { chapter: "الوحدة الثانية: الوعي القرائي", title: "الرسم الإملائي: الهمزة المتوسطة على الواو والألف", desc: "قواعد رسم الهمزة المتوسطة على الواو والألف بشكل صحيح ودقيق." },
             { chapter: "الوحدة الثانية: الوعي القرائي", title: "الصنف اللغوي: العلم (الاسم المعرف بالعلمية)", desc: "دراسة اسم العلم وأنواعه (اسم، كنية، لقب) وإعرابه." },
             { chapter: "الوحدة الثانية: الوعي القرائي", title: "الأسلوب اللغوي: المدح والذم (نعم وبئس)", desc: "التعرف على أسلوبي المدح والذم وتوظيفهما في التعبير." },
@@ -1189,6 +1038,7 @@
             }
         }
 
+        /* 🖨️ دالة طباعة تقرير الطالبة المفردة عبر نافذة منبثقة آمنة */
         function printStudentReport() {
             const stIndex = selectedStudentIndex;
             if (stIndex === '' || !students[stIndex]) {
@@ -1197,28 +1047,78 @@
             }
 
             const st = students[stIndex];
-            document.getElementById('printStudentName').textContent = st.name;
-            document.getElementById('printStudentClass').textContent = st.studentClass || 'سادس/1';
-            document.getElementById('printStudentSchoolName').textContent = SCHOOL_NAME;
-            document.getElementById('printStudentTeacherName').textContent = TEACHER_NAME;
-            
             const now = new Date();
             const dateStr = now.toLocaleDateString('ar-SA') + ' هـ';
-            document.getElementById('printStudentDate').textContent = dateStr;
 
-            document.getElementById('printValParticipation').textContent = st.participation || 0;
-            document.getElementById('printValHomework').textContent = st.homework || 0;
-            document.getElementById('printValAbsence').textContent = st.absence || 0;
-            document.getElementById('printValSkills').textContent = st.skills || 0;
-            document.getElementById('printValProjects').textContent = st.projects || 0;
-            document.getElementById('printValMessages').textContent = st.messages || 0;
+            var printWindow = window.open('', '_blank', 'height=700,width=900');
+            
+            printWindow.document.write('<html><head><title>تقرير متابعة الطالبة الرسمي</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('body { font-family: Tahoma, Arial, sans-serif; direction: rtl; text-align: right; color: #000; background: #fff; padding: 25px; margin: 0; }');
+            printWindow.document.write('.header-box { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px; }');
+            printWindow.document.write('h2, h3, h4 { margin: 5px 0; }');
+            printWindow.document.write('.meta-row { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }');
+            printWindow.document.write('th, td { border: 1px solid #333; padding: 10px; text-align: center; }');
+            printWindow.document.write('th { background-color: #f3f4f6; }');
+            printWindow.document.write('td.text-right { text-align: right; }');
+            printWindow.document.write('.signatures { margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px; }');
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
 
-            document.body.classList.remove('printing-class');
-            document.body.classList.add('printing-student');
-            window.print();
-            document.body.classList.remove('printing-student');
+            printWindow.document.write(`
+                <div class="header-box">
+                    <h2>المملكة العربية السعودية</h2>
+                    <h3>وزارة التعليم</h3>
+                    <h3 style="color: #be185d;">${SCHOOL_NAME}</h3>
+                    <h4 style="margin-top: 5px;">تقرير متابعة أداء الطالبة: ${st.name}</h4>
+                    <p style="margin: 5px 0 0 0; font-size: 14px;">الصف: ${st.studentClass || 'سادس/1'} - مادة لغتي الجميلة</p>
+                </div>
+
+                <div class="meta-row">
+                    <div><strong>معلمة المادة:</strong> ${TEACHER_NAME}</div>
+                    <div><strong>تاريخ التقرير:</strong> ${dateStr}</div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>عنصر المتابعة والتقييم</th>
+                            <th>الدرجة أو المجموع التراكمي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="text-right">✋ المشاركات الصفية الفعالة</td><td><strong>${st.participation || 0}</strong></td></tr>
+                        <tr><td class="text-right">📚 الواجبات المنزلية والأنشطة</td><td><strong>${st.homework || 0}</strong></td></tr>
+                        <tr><td class="text-right">🔴 أيام الغياب</td><td><strong>${st.absence || 0}</strong></td></tr>
+                        <tr><td class="text-right">⭐ المهارات اللغوية المكتسبة</td><td><strong>${st.skills || 0}</strong></td></tr>
+                        <tr><td class="text-right">🛠️ المشاريع والأنشطة الإثرائية</td><td><strong>${st.projects || 0}</strong></td></tr>
+                        <tr><td class="text-right">💬 إشعارات ورسائل التواصل المرسلة لولي الأمر</td><td><strong>${st.messages || 0}</strong></td></tr>
+                    </tbody>
+                </table>
+
+                <div class="signatures">
+                    <div>
+                        <p><strong>معلمة المادة:</strong> ${TEACHER_NAME}</p>
+                        <p><strong>التوقيع:</strong> ....................................</p>
+                    </div>
+                    <div style="text-align: left;">
+                        <p><strong>مديرة المدرسة:</strong> ....................................</p>
+                        <p><strong>التوقيع والختم:</strong> ....................................</p>
+                    </div>
+                </div>
+            `);
+
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(function () {
+                printWindow.print();
+                printWindow.close();
+            }, 600);
         }
 
+        /* 🖨️ دالة طباعة تقرير الصف الكامل عبر نافذة منبثقة آمنة ومنظمة */
         function printClassReport(className, event) {
             if (event) event.stopPropagation();
 
@@ -1233,36 +1133,93 @@
                 return;
             }
 
-            document.getElementById('printClassName').textContent = className;
-            document.getElementById('printSchoolName').textContent = SCHOOL_NAME;
-            document.getElementById('printTeacherName').textContent = TEACHER_NAME;
-            
             const now = new Date();
             const dateStr = now.toLocaleDateString('ar-SA') + ' هـ';
-            document.getElementById('printDate').textContent = dateStr;
 
-            const tbody = document.getElementById('printClassTableBody');
-            tbody.innerHTML = '';
+            var printWindow = window.open('', '_blank', 'height=750,width=1000');
+            
+            printWindow.document.write('<html><head><title>تقرير طالبات الصف الرسمي</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('body { font-family: Tahoma, Arial, sans-serif; direction: rtl; text-align: right; color: #000; background: #fff; padding: 25px; margin: 0; }');
+            printWindow.document.write('.header-box { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px; }');
+            printWindow.document.write('h2, h3, h4 { margin: 5px 0; }');
+            printWindow.document.write('.meta-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; }');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }');
+            printWindow.document.write('th, td { border: 1px solid #333; padding: 8px; text-align: center; }');
+            printWindow.document.write('th { background-color: #f3f4f6; }');
+            printWindow.document.write('td.text-right { text-align: right; }');
+            printWindow.document.write('.signatures { margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px; }');
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
+
+            printWindow.document.write(`
+                <div class="header-box">
+                    <h2>المملكة العربية السعودية</h2>
+                    <h3>وزارة التعليم</h3>
+                    <h3 style="color: #be185d;">${SCHOOL_NAME}</h3>
+                    <h4 style="margin-top: 5px;">تقرير متابعة أداء طالبات الصف: ${className}</h4>
+                    <p style="margin: 5px 0 0 0; font-size: 14px;">مادة لغتي الجميلة - الصف السادس الابتدائي</p>
+                </div>
+
+                <div class="meta-row">
+                    <div><strong>معلمة المادة:</strong> ${TEACHER_NAME}</div>
+                    <div><strong>تاريخ التقرير:</strong> ${dateStr}</div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>اسم الطالبة</th>
+                            <th>رقم الجوال</th>
+                            <th>الغياب</th>
+                            <th>المشاركة</th>
+                            <th>الواجبات</th>
+                            <th>المهارات</th>
+                            <th>المشاريع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `);
 
             classStudents.forEach((st, idx) => {
-                tbody.innerHTML += `
+                printWindow.document.write(`
                     <tr>
-                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${idx + 1}</td>
-                        <td style="border: 1px solid #333; padding: 6px; text-align: right;"><strong>${st.name}</strong></td>
-                        <td style="border: 1px solid #333; padding: 6px; text-align: center;" dir="ltr">${st.phone || '-'}</td>
-                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.absence || 0}</td>
-                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.participation || 0}</td>
-                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.homework || 0}</td>
-                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.skills || 0}</td>
-                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.projects || 0}</td>
+                        <td>${idx + 1}</td>
+                        <td class="text-right"><strong>${st.name}</strong></td>
+                        <td dir="ltr">${st.phone || '-'}</td>
+                        <td>${st.absence || 0}</td>
+                        <td>${st.participation || 0}</td>
+                        <td>${st.homework || 0}</td>
+                        <td>${st.skills || 0}</td>
+                        <td>${st.projects || 0}</td>
                     </tr>
-                `;
+                `);
             });
 
-            document.body.classList.remove('printing-student');
-            document.body.classList.add('printing-class');
-            window.print();
-            document.body.classList.remove('printing-class');
+            printWindow.document.write(`
+                    </tbody>
+                </table>
+
+                <div class="signatures">
+                    <div>
+                        <p><strong>معلمة المادة:</strong> ${TEACHER_NAME}</p>
+                        <p><strong>التوقيع:</strong> ....................................</p>
+                    </div>
+                    <div style="text-align: left;">
+                        <p><strong>مديرة المدرسة:</strong> ....................................</p>
+                        <p><strong>التوقيع والختم:</strong> ....................................</p>
+                    </div>
+                </div>
+            `);
+
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(function () {
+                printWindow.print();
+                printWindow.close();
+            }, 600);
         }
 
         function exportExcel() {
@@ -1316,13 +1273,8 @@
                             const name = String(row["Student Name"] || row["اسم الطالبة"] || row["Name"] || "").trim();
                             const rawClass = String(row["Class"] || row["الصف"] || row["الفصل"] || "").trim();
 
-                            if (!name || name === "" || name === "undefined" || name === "null") {
-                                return;
-                            }
-
-                            if (!rawClass || rawClass === "" || rawClass === "undefined" || rawClass === "null") {
-                                return;
-                            }
+                            if (!name || name === "" || name === "undefined" || name === "null") return;
+                            if (!rawClass || rawClass === "" || rawClass === "undefined" || rawClass === "null") return;
 
                             students.push({
                                 id: Date.now() + Math.random(),
