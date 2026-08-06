@@ -1006,9 +1006,8 @@
             }
         }
 
-        // --- وظيفة حذف جميع طالبات صف معين (مثل 6/1) ---
         function deleteClassStudents(className, event) {
-            if (event) event.stopPropagation(); // منع تفعيل زر العرض عند النقر على الحذف
+            if (event) event.stopPropagation();
             
             const count = students.filter(s => (s.studentClass || 'سادس/1') === className).length;
             if (count === 0) {
@@ -1072,30 +1071,47 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
                     if (jsonData.length > 0) {
-                        if (confirm(`تم العثور على (${jsonData.length}) طالبة في الملف. هل تريد استيراد البيانات وإضافتها؟`)) {
-                            jsonData.forEach(row => {
-                                const name = row["Student Name"] || row["اسم الطالبة"] || row["Name"];
-                                if (name) {
-                                    students.push({
-                                        id: Date.now() + Math.random(),
-                                        name: name,
-                                        studentClass: row["Class"] || row["الصف"] || row["الفصل"] || "سادس/1",
-                                        phone: String(row["Phone"] || row["رقم الجوال"] || row["الجوال"] || ""),
-                                        absence: Number(row["Absence"] || row["الغياب"] || 0),
-                                        participation: Number(row["Participation"] || row["المشاركة"] || 0),
-                                        homework: Number(row["Homework"] || row["الواجبات"] || 0),
-                                        skills: Number(row["Skills"] || row["المهارات"] || 0),
-                                        projects: Number(row["Projects"] || row["المشاريع"] || 0),
-                                        messages: Number(row["Messages Sent"] || row["الرسائل"] || 0)
-                                    });
-                                }
+                        let importedCount = 0;
+                        jsonData.forEach(row => {
+                            const name = String(row["Student Name"] || row["اسم الطالبة"] || row["Name"] || "").trim();
+                            const rawClass = String(row["Class"] || row["الصف"] || row["الفصل"] || "").trim();
+
+                            // تجاهل الصفوف الفارغة أو التي لا تحتوي على اسم طالبة صالح
+                            if (!name || name === "" || name === "undefined" || name === "null") {
+                                return;
+                            }
+
+                            // تجاهل الفصول الفارغة أو غير المعرفة (عدم خلق فصول افتراضية عشوائية)
+                            if (!rawClass || rawClass === "" || rawClass === "undefined" || rawClass === "null") {
+                                return;
+                            }
+
+                            students.push({
+                                id: Date.now() + Math.random(),
+                                name: name,
+                                studentClass: rawClass,
+                                phone: String(row["Phone"] || row["رقم الجوال"] || row["الجوال"] || "").trim(),
+                                absence: Number(row["Absence"] || row["الغياب"] || 0),
+                                participation: Number(row["Participation"] || row["المشاركة"] || 0),
+                                homework: Number(row["Homework"] || row["الواجبات"] || 0),
+                                skills: Number(row["Skills"] || row["المهارات"] || 0),
+                                projects: Number(row["Projects"] || row["المشاريع"] || 0),
+                                messages: Number(row["Messages Sent"] || row["الرسائل"] || 0)
                             });
-                            currentPage = 1;
-                            saveAndRefresh();
-                            showToast('📂 تم استيراد ملف الإكسل بنجاح!');
+                            importedCount++;
+                        });
+
+                        if (importedCount > 0) {
+                            if (confirm(`تم استيراد (${importedCount}) طالبة بنجاح وتجاهل الصفوف الفارغة. هل تريد حفظ التغييرات؟`)) {
+                                currentPage = 1;
+                                saveAndRefresh();
+                                showToast('📂 تم استيراد ملف الإكسل وتصفية البيانات بنجاح!');
+                            }
+                        } else {
+                            alert('لم يتم العثور على بيانات طالبات صالحة أو فصول محددة في الملف.');
                         }
                     } else {
                         alert('ملف الإكسل فارغ أو غير مطابق للهيكلية المطلوبة.');
@@ -1201,7 +1217,7 @@
             
             const defaultClasses = ["سادس/1", "سادس/2", "سادس/3", "سادس/4", "سادس/5", "سادس/6", "سادس/7", "سادس/8"];
             const existingClasses = students.map(s => s.studentClass || 'سادس/1');
-            const allClasses = [...new Set([...defaultClasses, ...existingClasses])];
+            const allClasses = [...new Set([...defaultClasses, ...existingClasses])].filter(c => c && c.trim() !== "");
             
             queryContainer.innerHTML = '';
             bulkTargetSelect.innerHTML = '<option value="ALL">جميع الصفوف</option>';
@@ -1225,7 +1241,7 @@
             `;
 
             allClasses.forEach(cls => {
-                const count = students.filter(s => (s.studentClass || 'سادس/1') === cls).length;
+                const count = students.filter(s => (s.studentClass || '') === cls).length;
                 const isActive = (activeQueryClass === cls) ? 'active' : '';
 
                 queryContainer.innerHTML += `
@@ -1283,9 +1299,9 @@
                 filtered.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'searchable-item';
-                    div.innerHTML = `<strong>${item.st.name}</strong> <span style="font-size: 12px; opacity: 0.7; float: left;">(${item.st.studentClass || 'سادس/1'})</span>`;
+                    div.innerHTML = `<strong>${item.st.name}</strong> <span style="font-size: 12px; opacity: 0.7; float: left;">(${item.st.studentClass || ''})</span>`;
                     div.onclick = function() {
-                        selectStudentFromDropdown(item.index, item.st.name, item.st.studentClass || 'سادس/1');
+                        selectStudentFromDropdown(item.index, item.st.name, item.st.studentClass || '');
                     };
                     listContainer.appendChild(div);
                 });
@@ -1326,7 +1342,7 @@
                 if (searchInputVal !== '') {
                     return item.st.name.toLowerCase().includes(searchInputVal);
                 } else {
-                    const stClass = item.st.studentClass || 'سادس/1';
+                    const stClass = item.st.studentClass || '';
                     if (activeQueryClass === 'ALL') return true;
                     return stClass === activeQueryClass;
                 }
@@ -1344,7 +1360,7 @@
             paginatedItems.forEach(item => {
                 const st = item.st;
                 const i = item.originalIndex;
-                const stClass = st.studentClass || 'سادس/1';
+                const stClass = st.studentClass || '';
 
                 tbody.innerHTML += `
                     <tr>
@@ -1424,7 +1440,7 @@
 
             const st = students[index];
             document.getElementById('selectedName').textContent = st.name;
-            document.getElementById('selectedClassBadge').textContent = st.studentClass || 'سادس/1';
+            document.getElementById('selectedClassBadge').textContent = st.studentClass || '';
             document.getElementById('sdParticipation').textContent = st.participation || 0;
             document.getElementById('sdHomework').textContent = st.homework || 0;
             document.getElementById('sdAbsence').textContent = st.absence || 0;
@@ -1462,7 +1478,7 @@
             const statusLabel = lessonStatus[lIndex] ? '✅ منجز' : '⏳ قيد الانتظار';
 
             const headerInfo = `🏫 المدرسة: ${SCHOOL_NAME}\n👩‍🏫 معلمة المادة: ${TEACHER_NAME}\n\n`;
-            const msg = `${headerInfo}عزيزي وليّ أمر الطالبة: ${st.name} (${st.studentClass || 'سادس/1'})\nنحيطكم علماً بما تم إنجازه في درس اليوم لمادة لغتي الجميلة:\n📘 ${l.chapter} - ${l.title}\n📌 حالة الدرس: ${statusLabel}\n📝 المفاهيم والمهارات المدروسة: ${l.desc}\n⭐ المهارات المكتسبة: ${st.skills || 0}\n\nشكراً لتعاونكم المستمر ومتابعتكم الرائعة.`;
+            const msg = `${headerInfo}عزيزي وليّ أمر الطالبة: ${st.name} (${st.studentClass || ''})\nنحيطكم علماً بما تم إنجازه في درس اليوم لمادة لغتي الجميلة:\n📘 ${l.chapter} - ${l.title}\n📌 حالة الدرس: ${statusLabel}\n📝 المفاهيم والمهارات المدروسة: ${l.desc}\n⭐ المهارات المكتسبة: ${st.skills || 0}\n\nشكراً لتعاونكم المستمر ومتابعتكم الرائعة.`;
 
             preview.textContent = msg;
 
@@ -1489,7 +1505,7 @@
             const st = students[stIndex];
             const msgTemplate = motivationTemplates[mKey] || '';
             const headerInfo = `🏫 المدرسة: ${SCHOOL_NAME}\n👩‍🏫 معلمة المادة: ${TEACHER_NAME}\n\n`;
-            const msg = `${headerInfo}${msgTemplate}\n\nالطالبة: ${st.name} (${st.studentClass || 'سادس/1'})`;
+            const msg = `${headerInfo}${msgTemplate}\n\nالطالبة: ${st.name} (${st.studentClass || ''})`;
 
             preview.textContent = msg;
 
@@ -1535,7 +1551,7 @@
             }
 
             const targetStudents = students.filter(st => {
-                const stClass = st.studentClass || 'سادس/1';
+                const stClass = st.studentClass || '';
                 const hasPhone = getCleanPhone(st.phone) !== null;
                 if (!hasPhone) return false;
                 if (targetClass === 'ALL') return true;
@@ -1560,7 +1576,7 @@
             }
 
             targetStudents.forEach((st, idx) => {
-                const msg = `${headerInfo}عزيزي وليّ أمر الطالبة: ${st.name} (${st.studentClass || 'سادس/1'})\nنحيطكم علماً بأن الواجب/المهمة الخاصة بمادة لغتي الجميلة هي:\n📘 ${l.chapter} - ${l.title}\n📝 التفاصيل المطلوبة: ${l.desc}\n${noteSection}\nنرجو الاهتمام والمتابعة وحث البطلة على إنجاز المهمة في موعدها.\nشكراً لتعاونكم المستمر.`;
+                const msg = `${headerInfo}عزيزي وليّ أمر الطالبة: ${st.name} (${st.studentClass || ''})\nنحيطكم علماً بأن الواجب/المهمة الخاصة بمادة لغتي الجميلة هي:\n📘 ${l.chapter} - ${l.title}\n📝 التفاصيل المطلوبة: ${l.desc}\n${noteSection}\nنرجو الاهتمام والمتابعة وحث البطلة على إنجاز المهمة في موعدها.\nشكراً لتعاونكم المستمر.`;
                 const phone = getCleanPhone(st.phone);
 
                 setTimeout(() => {
