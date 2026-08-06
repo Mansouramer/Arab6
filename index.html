@@ -662,6 +662,7 @@
                     <option value="سادس/7">سادس/7</option>
                     <option value="سادس/8">سادس/8</option>
                 </select>
+                <button class="btn-print" onclick="printExamsAnalysisReport()" style="display: none;" id="printExamsBtn">🖨️ طباعة تقرير تحليل النتائج</button>
             </div>
 
             <div id="examsAnalysisBox" class="sub-box" style="display: none; margin-bottom: 15px;">
@@ -991,10 +992,12 @@
             const selectedCls = select.value;
             const tbody = document.getElementById('examsTbody');
             const analysisBox = document.getElementById('examsAnalysisBox');
+            const printBtn = document.getElementById('printExamsBtn');
 
             if (!selectedCls) {
                 tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; opacity: 0.7;">الرجاء اختيار الصف الدراسي من القائمة أعلاه لعرض رصد واختبارات الطالبات.</td></tr>`;
                 analysisBox.style.display = 'none';
+                printBtn.style.display = 'none';
                 return;
             }
 
@@ -1003,6 +1006,7 @@
             if (classStudents.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; opacity: 0.7;">لا توجد طالبات مسجلات في هذا الصف حالياً.</td></tr>`;
                 analysisBox.style.display = 'none';
+                printBtn.style.display = 'none';
                 return;
             }
 
@@ -1041,7 +1045,118 @@
             document.getElementById('avgExam2').textContent = count2 > 0 ? (sum2 / count2).toFixed(1) : '0';
             document.getElementById('fullExam1').textContent = `${full1} طالبات`;
             document.getElementById('fullExam2').textContent = `${full2} طالبات`;
+            
             analysisBox.style.display = 'block';
+            printBtn.style.display = 'inline-block';
+        }
+
+        function printExamsAnalysisReport() {
+            const select = document.getElementById('examClassSelect');
+            const selectedCls = select.value;
+            if (!selectedCls) return;
+
+            const classStudents = students.filter(s => (s.studentClass || 'سادس/1') === selectedCls);
+            if (classStudents.length === 0) return;
+
+            let sum1 = 0, sum2 = 0, count1 = 0, count2 = 0, full1 = 0, full2 = 0;
+            classStudents.forEach(st => {
+                if (st.exam1 !== undefined && st.exam1 !== '') {
+                    sum1 += Number(st.exam1);
+                    count1++;
+                    if (Number(st.exam1) >= 20 || Number(st.exam1) >= 10) full1++;
+                }
+                if (st.exam2 !== undefined && st.exam2 !== '') {
+                    sum2 += Number(st.exam2);
+                    count2++;
+                    if (Number(st.exam2) >= 20 || Number(st.exam2) >= 10) full2++;
+                }
+            });
+
+            const avg1 = count1 > 0 ? (sum1 / count1).toFixed(1) : '0';
+            const avg2 = count2 > 0 ? (sum2 / count2).toFixed(1) : '0';
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-SA') + ' هـ';
+
+            var printWindow = window.open('', '_blank', 'height=750,width=1000');
+            printWindow.document.write('<html><head><title>تقرير تحليل نتائج الاختبارات</title>');
+            printWindow.document.write('<style>');
+            printWindow.document.write('body { font-family: Tahoma, Arial, sans-serif; direction: rtl; text-align: right; color: #000; background: #fff; padding: 25px; margin: 0; }');
+            printWindow.document.write('.header-box { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px; }');
+            printWindow.document.write('h2, h3, h4 { margin: 5px 0; }');
+            printWindow.document.write('.meta-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; }');
+            printWindow.document.write('.stats-box { display: flex; justify-content: space-around; background: #f3f4f6; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }');
+            printWindow.document.write('th, td { border: 1px solid #333; padding: 8px; text-align: center; }');
+            printWindow.document.write('th { background-color: #f3f4f6; }');
+            printWindow.document.write('td.text-right { text-align: right; }');
+            printWindow.document.write('.signatures { margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px; }');
+            printWindow.document.write('</style>');
+            printWindow.document.write('</head><body>');
+
+            printWindow.document.write(`
+                <div class="header-box">
+                    <h2>المملكة العربية السعودية</h2>
+                    <h3>وزارة التعليم</h3>
+                    <h3 style="color: #be185d;">${SCHOOL_NAME}</h3>
+                    <h4 style="margin-top: 5px;">تقرير تحليل نتائج اختبارات الفترة الأولى والفترة الثانية - صف: ${selectedCls}</h4>
+                    <p style="margin: 5px 0 0 0; font-size: 14px;">مادة لغتي الجميلة - الصف السادس الابتدائي</p>
+                </div>
+
+                <div class="meta-row">
+                    <div><strong>معلمة المادة:</strong> ${TEACHER_NAME}</div>
+                    <div><strong>تاريخ التقرير:</strong> ${dateStr}</div>
+                </div>
+
+                <div class="stats-box">
+                    <div><strong>متوسط الفترة الأولى:</strong><br>${avg1}</div>
+                    <div><strong>متوسط الفترة الثانية:</strong><br>${avg2}</div>
+                    <div><strong>العلامة الكاملة (ف1):</strong><br>${full1} طالبات</div>
+                    <div><strong>العلامة الكاملة (ف2):</strong><br>${full2} طالبات</div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>اسم الطالبة</th>
+                            <th>اختبار الفترة الأولى</th>
+                            <th>اختبار الفترة الثانية</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `);
+
+            classStudents.forEach((st, idx) => {
+                printWindow.document.write(`
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td class="text-right"><strong>${st.name}</strong></td>
+                        <td>${st.exam1 !== undefined && st.exam1 !== '' ? st.exam1 : '-'}</td>
+                        <td>${st.exam2 !== undefined && st.exam2 !== '' ? st.exam2 : '-'}</td>
+                    </tr>
+                `);
+            });
+
+            printWindow.document.write(`
+                    </tbody>
+                </table>
+
+                <div class="signatures">
+                    <div>
+                        <p><strong>معلمة المادة:</strong> ${TEACHER_NAME}</p>
+                        <p><strong>التوقيع:</strong> ....................................</p>
+                    </div>
+                    <div style="text-align: left;">
+                        <p><strong>مديرة المدرسة:</strong> ....................................</p>
+                        <p><strong>التوقيع والختم:</strong> ....................................</p>
+                    </div>
+                </div>
+            `);
+
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(function () { printWindow.print(); }, 1000);
         }
 
         function updateHeaderStats() {
