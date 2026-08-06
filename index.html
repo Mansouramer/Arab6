@@ -211,6 +211,7 @@
             flex-wrap: wrap;
             gap: 10px;
             margin: 15px 0;
+            align-items: center;
         }
 
         .class-btn-wrapper {
@@ -514,6 +515,10 @@
         }
 
         /* تنسيق نافذة الطباعة التخصصية */
+        #printableClassReport {
+            display: none;
+        }
+
         @media print {
             body * {
                 visibility: hidden;
@@ -530,6 +535,21 @@
                 color: black !important;
                 padding: 20px;
                 box-shadow: none;
+            }
+
+            #printableClassReport, #printableClassReport * {
+                visibility: visible;
+            }
+            #printableClassReport {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+                color: black !important;
+                padding: 20px;
+                box-shadow: none;
+                display: block !important;
             }
         }
     </style>
@@ -615,9 +635,9 @@
                 <button onclick="addStudent()">➕ إضافة طالبة</button>
             </div>
 
-            <!-- أزرار استعلام الصفوف التفاعلية مع زر الحذف المخصص لكل صف -->
+            <!-- أزرار استعلام الصفوف التفاعلية مع زر الطباعة وزر الحذف المخصص لكل صف -->
             <div style="margin-top: 20px;">
-                <span style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">🏫 استعلام الصفوف (اضغط على الصف للعرض، أو اضغط على أيقونة 🗑️ لحذف طالبات الصف كاملاً):</span>
+                <span style="font-weight: bold; font-size: 14px; display: block; margin-bottom: 8px;">🏫 استعلام الصفوف (اضغط على الصف لعرضه، أو استخدم زر الطباعة 🖨️ لطباعة تقرير الصف شامل بيانات المدرسة والمعلمة):</span>
                 <div id="classesQueryContainer" class="classes-query-grid"></div>
             </div>
 
@@ -799,6 +819,50 @@
             للتواصل واتساب: <a href="https://wa.me/966581015002" target="_blank" style="color: inherit; text-decoration: underline;">0581015002</a>
         </div>
 
+    </div>
+
+    <!-- حاوية تقرير الصف المخصص للطباعة الرسمية -->
+    <div id="printableClassReport">
+        <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #333; padding-bottom: 15px;">
+            <h2 style="margin: 0 0 5px 0; font-size: 22px;">المملكة العربية السعودية</h2>
+            <h3 style="margin: 0 0 5px 0; font-size: 18px;">وزارة التعليم</h3>
+            <h3 id="printSchoolName" style="margin: 0 0 10px 0; font-size: 20px; color: #be185d;">الابتدائية الأولى بنات</h3>
+            <h4 style="margin: 0; font-size: 16px;">تقرير متابعة أداء طالبات الصف: <span id="printClassName"></span></h4>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">مادة لغتي الجميلة - الصف السادس الابتدائي</p>
+        </div>
+
+        <div style="margin-bottom: 15px; font-size: 14px; display: flex; justify-content: space-between;">
+            <div><strong>معلمة المادة:</strong> <span id="printTeacherName">فلانة بنت فلان</span></div>
+            <div><strong>تاريخ التقرير:</strong> <span id="printDate"></span></div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+            <thead>
+                <tr style="background-color: #f3f4f6 !important;">
+                    <th style="border: 1px solid #333; padding: 8px;">م</th>
+                    <th style="border: 1px solid #333; padding: 8px;">اسم الطالبة</th>
+                    <th style="border: 1px solid #333; padding: 8px;">رقم الجوال</th>
+                    <th style="border: 1px solid #333; padding: 8px;">الغياب</th>
+                    <th style="border: 1px solid #333; padding: 8px;">المشاركة</th>
+                    <th style="border: 1px solid #333; padding: 8px;">الواجبات</th>
+                    <th style="border: 1px solid #333; padding: 8px;">المهارات</th>
+                    <th style="border: 1px solid #333; padding: 8px;">المشاريع</th>
+                </tr>
+            </thead>
+            <tbody id="printClassTableBody">
+            </tbody>
+        </table>
+
+        <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 14px;">
+            <div>
+                <p><strong>معلمة المادة:</strong> العبارة / ....................................</p>
+                <p><strong>التوقيع:</strong> ....................................</p>
+            </div>
+            <div style="text-align: left;">
+                <p><strong>قائدة المدرسة:</strong> ....................................</p>
+                <p><strong>التوقيع والختم:</strong> ....................................</p>
+            </div>
+        </div>
     </div>
 
     <div id="toast" class="toast">✅ تم حفظ البيانات تلقائياً!</div>
@@ -1057,6 +1121,49 @@
             }
         }
 
+        function printClassReport(className, event) {
+            if (event) event.stopPropagation();
+
+            if (!className || className === 'ALL') {
+                alert('يرجى اختيار صف محدد (مثل سادس/1) لطباعة تقريره الرسمي.');
+                return;
+            }
+
+            const classStudents = students.filter(s => (s.studentClass || 'سادس/1') === className);
+            if (classStudents.length === 0) {
+                alert(`لا توجد طالبات مسجلات في الصف (${className}) لطباعة تقريرهن.`);
+                return;
+            }
+
+            document.getElementById('printClassName').textContent = className;
+            document.getElementById('printSchoolName').textContent = SCHOOL_NAME;
+            document.getElementById('printTeacherName').textContent = TEACHER_NAME;
+            
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-SA') + ' هـ';
+            document.getElementById('printDate').textContent = dateStr;
+
+            const tbody = document.getElementById('printClassTableBody');
+            tbody.innerHTML = '';
+
+            classStudents.forEach((st, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${idx + 1}</td>
+                        <td style="border: 1px solid #333; padding: 6px; text-align: right;"><strong>${st.name}</strong></td>
+                        <td style="border: 1px solid #333; padding: 6px; text-align: center;" dir="ltr">${st.phone || '-'}</td>
+                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.absence || 0}</td>
+                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.participation || 0}</td>
+                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.homework || 0}</td>
+                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.skills || 0}</td>
+                        <td style="border: 1px solid #333; padding: 6px; text-align: center;">${st.projects || 0}</td>
+                    </tr>
+                `;
+            });
+
+            window.print();
+        }
+
         function exportExcel() {
             if (students.length === 0) {
                 alert('لا توجد بيانات طالبات للتصدير!');
@@ -1276,6 +1383,9 @@
                         <button class="class-query-btn" onclick="selectQueryClass('${cls}')">
                             🏫 ${cls} <span style="font-size: 11px; opacity: 0.8;">(${count})</span>
                         </button>
+                        <button class="btn-info btn-action" onclick="printClassReport('${cls}', event)" title="طباعة تقرير الصف الرسمي" style="padding: 0 8px; font-size: 13px; border-radius: 0;">
+                            🖨️
+                        </button>
                         <button class="class-delete-btn" onclick="deleteClassStudents('${cls}', event)" title="حذف جميع طالبات الصف ${cls}">
                             🗑️
                         </button>
@@ -1445,7 +1555,7 @@
             document.getElementById('totalHomework').textContent = totals.homework;
             document.getElementById('totalAbsence').textContent = totals.absence;
             document.getElementById('totalProjects').textContent = totals.projects;
-            document.getElementById('totalMessagesSent').textContent = totals.messages;
+            document.getElementById('totalMessagesSent').textContent, totals.messages;
 
             if (selectedStudentIndex !== '' && students[selectedStudentIndex]) {
                 loadStudentDetails();
