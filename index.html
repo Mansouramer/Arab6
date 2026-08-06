@@ -1112,10 +1112,11 @@
             printWindow.document.write('</body></html>');
             printWindow.document.close();
             printWindow.focus();
+            
+            // تم تعديل وقت الانتظار وإلغاء الإغلاق التلقائي لضمان عدم اختفاء النافذة بسرعة
             setTimeout(function () {
                 printWindow.print();
-                printWindow.close();
-            }, 600);
+            }, 1000);
         }
 
         /* 🖨️ دالة طباعة تقرير الصف الكامل عبر نافذة منبثقة آمنة ومنظمة */
@@ -1216,10 +1217,11 @@
             printWindow.document.write('</body></html>');
             printWindow.document.close();
             printWindow.focus();
+            
+            // تم تعديل وقت الانتظار وإلغاء الإغلاق التلقائي لضمان عدم اختفاء النافذة بسرعة
             setTimeout(function () {
                 printWindow.print();
-                printWindow.close();
-            }, 600);
+            }, 1000);
         }
 
         function exportExcel() {
@@ -1810,3 +1812,4 @@
     </script>
 </body>
 </html>
+
