@@ -2329,16 +2329,15 @@
                     if (idx === targetStudents.length - 1) {
                         saveAndRefresh();
                     }
-                }, idx * 1200);
+                }, idx * 600);
             });
-
-            showToast('🚀 جاري فتح رسائل الواتساب الجماعية...');
         }
 
-        renderLessons();
-        render();
-        initCharts();
+        window.onload = function() {
+            renderLessons();
+            initCharts();
+            render();
+        };
     </script>
 </body>
 </html>
-
