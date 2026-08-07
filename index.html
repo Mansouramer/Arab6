@@ -604,15 +604,39 @@
             </div>
         </div>
 
-        <!-- قسم الرسوم البيانية التفاعلية -->
+        <!-- قسم التحليل الذكي ومؤشرات الأداء المتقدمة -->
         <div class="section-card">
-            <h3>📈 لوحة المؤشرات والرسوم البيانية التحليلية</h3>
+            <h3>🧠 لوحة التحليل الذكي ومؤشرات الأداء الأكاديمي</h3>
+            <div class="student-details" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 20px;">
+                <div class="detail-item">
+                    <span>🏆 نسبة إنجاز المنهج العام</span>
+                    <strong id="kpiCurriculumProgress">0%</strong>
+                </div>
+                <div class="detail-item">
+                    <span>🌟 نسبة الطالبات المتفوقات (أعلى من 85%)</span>
+                    <strong id="kpiExcellenceRate">0%</strong>
+                </div>
+                <div class="detail-item">
+                    <span>⚠️ طالبات بحاجة لدعم عاجل</span>
+                    <strong id="kpiAtRiskCount" style="color: var(--danger);">0 طالبة</strong>
+                </div>
+                <div class="detail-item">
+                    <span>📈 متوسط تحصيل اختبارات الفترات</span>
+                    <strong id="kpiGeneralAvg">- / 20</strong>
+                </div>
+            </div>
             <div class="charts-grid">
                 <div class="chart-box">
                     <canvas id="classesBarChart"></canvas>
                 </div>
                 <div class="chart-box">
                     <canvas id="activitiesDoughnutChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <canvas id="academicLevelsChart"></canvas>
+                </div>
+                <div class="chart-box">
+                    <canvas id="examsComparisonChart"></canvas>
                 </div>
             </div>
         </div>
@@ -888,6 +912,8 @@
 
         let classesChartInstance = null;
         let activitiesChartInstance = null;
+        let academicLevelsChartInstance = null;
+        let examsComparisonChartInstance = null;
 
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
         document.onkeydown = function(e) {
@@ -1008,6 +1034,7 @@
             students[index][examField] = num;
             localStorage.setItem('awwal_students_ughati_v2', JSON.stringify(students));
             renderExamsTable();
+            updateCharts();
             showToast('✅ تم تحديث درجة الاختبار!');
         }
 
@@ -1223,6 +1250,8 @@
         function initCharts() {
             const ctxBar = document.getElementById('classesBarChart').getContext('2d');
             const ctxDoughnut = document.getElementById('activitiesDoughnutChart').getContext('2d');
+            const ctxLevels = document.getElementById('academicLevelsChart').getContext('2d');
+            const ctxExams = document.getElementById('examsComparisonChart').getContext('2d');
 
             classesChartInstance = new Chart(ctxBar, {
                 type: 'bar',
@@ -1267,11 +1296,56 @@
                 }
             });
 
+            academicLevelsChartInstance = new Chart(ctxLevels, {
+                type: 'pie',
+                data: {
+                    labels: ['متفوقات (85%+)', 'متوسطات (60%-84%)', 'بحاجة لدعم (<60%)'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#10b981', '#3b82f6', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'تحليل مستويات التحصيل الأكاديمي', font: { family: 'Segoe UI', size: 14 } },
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            examsComparisonChartInstance = new Chart(ctxExams, {
+                type: 'line',
+                data: {
+                    labels: ['الفترة الأولى', 'الفترة الثانية'],
+                    datasets: [{
+                        label: 'متوسط درجات الصفوف',
+                        data: [0, 0],
+                        borderColor: '#be185d',
+                        backgroundColor: 'rgba(190, 24, 93, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'مقارنة متوسط الفترات الدراسية', font: { family: 'Segoe UI', size: 14 } },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, max: 20 }
+                    }
+                }
+            });
+
             updateCharts();
         }
 
         function updateCharts() {
-            if (!classesChartInstance || !activitiesChartInstance) return;
+            if (!classesChartInstance || !activitiesChartInstance || !academicLevelsChartInstance || !examsComparisonChartInstance) return;
 
             const defaultClasses = ["سادس/1", "سادس/2", "سادس/3", "سادس/4", "سادس/5", "سادس/6", "سادس/7", "سادس/8"];
             const existingClasses = students.map(s => s.studentClass || 'سادس/1');
@@ -1294,10 +1368,56 @@
 
             activitiesChartInstance.data.datasets[0].data = [totalPart, totalHw, totalSk, totalPr, totalAb];
             activitiesChartInstance.update();
+
+            // تحليل مستويات التحصيل والـ KPIs
+            let excellentCount = 0, mediumCount = 0, atRiskCount = 0;
+            let sumExam1 = 0, countExam1 = 0, sumExam2 = 0, countExam2 = 0;
+
+            students.forEach(st => {
+                if (st.exam1 !== undefined && st.exam1 !== '') {
+                    sumExam1 += Number(st.exam1);
+                    countExam1++;
+                }
+                if (st.exam2 !== undefined && st.exam2 !== '') {
+                    sumExam2 += Number(st.exam2);
+                    countExam2++;
+                }
+
+                // حساب متوسط مبدئي للطالبة بناءً على الفترات أو التفاعل
+                const score1 = st.exam2 !== undefined && st.exam2 !== '' ? Number(st.exam2) : (st.exam1 !== undefined && st.exam1 !== '' ? Number(st.exam1) : null);
+                if (score1 !== null) {
+                    const percentage = (score1 / 20) * 100;
+                    if (percentage >= 85) excellentCount++;
+                    else if (percentage >= 60) mediumCount++;
+                    else atRiskCount++;
+                }
+            });
+
+            academicLevelsChartInstance.data.datasets[0].data = [excellentCount, mediumCount, atRiskCount];
+            academicLevelsChartInstance.update();
+
+            const avg1Val = countExam1 > 0 ? (sumExam1 / countExam1) : 0;
+            const avg2Val = countExam2 > 0 ? (sumExam2 / countExam2) : 0;
+
+            examsComparisonChartInstance.data.datasets[0].data = [avg1Val.toFixed(1), avg2Val.toFixed(1)];
+            examsComparisonChartInstance.update();
+
+            // تحديث البطاقات التحليلية (KPIs)
+            const executedLessonsCount = Object.values(lessonStatus).filter(val => val === true).length;
+            const curriculumProgressPercent = lessons.length > 0 ? Math.round((executedLessonsCount / lessons.length) * 100) : 0;
+            document.getElementById('kpiCurriculumProgress').textContent = curriculumProgressPercent + '%';
+
+            const totalEvaluated = excellentCount + mediumCount + atRiskCount;
+            const excellenceRateVal = totalEvaluated > 0 ? Math.round((excellentCount / totalEvaluated) * 100) : 0;
+            document.getElementById('kpiExcellenceRate').textContent = excellenceRateVal + '%';
+
+            document.getElementById('kpiAtRiskCount').textContent = atRiskCount + ' طالبة';
+
+            const generalAvgVal = (countExam1 > 0 || countExam2 > 0) ? ((avg1Val + avg2Val) / (countExam1 > 0 && countExam2 > 0 ? 2 : 1)).toFixed(1) + ' / 20' : '- / 20';
+            document.getElementById('kpiGeneralAvg').textContent = generalAvgVal;
         }
 
         function updateChartsTheme() {
-            // يمكن تحديث ألوان المخططات عند تغيير الثيم إن لزم الأمر
             updateCharts();
         }
 
@@ -1305,6 +1425,7 @@
             lessonStatus[index] = !lessonStatus[index];
             localStorage.setItem('awwal_lesson_status_ughati_v2', JSON.stringify(lessonStatus));
             renderLessons();
+            updateCharts();
             showToast('🔄 تم تحديث حالة الدرس وحفظه!');
         }
 
@@ -1324,6 +1445,7 @@
             document.getElementById('newLessonDesc').value = '';
 
             renderLessons();
+            updateCharts();
             showToast('➕ تم إضافة الدرس وحفظه!');
         }
 
@@ -1332,6 +1454,7 @@
                 lessons.splice(index, 1);
                 localStorage.setItem('awwal_custom_lessons_ughati_v2', JSON.stringify(lessons));
                 renderLessons();
+                updateCharts();
                 showToast('🗑️ تم حذف الدرس بنجاح!');
             }
         }
@@ -2202,4 +2325,3 @@
     </script>
 </body>
 </html>
-
