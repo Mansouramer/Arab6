@@ -625,13 +625,7 @@
                     <strong id="kpiGeneralAvg">- / 20</strong>
                 </div>
             </div>
-            <div class="charts-grid">
-                <div class="chart-box">
-                    <canvas id="classesBarChart"></canvas>
-                </div>
-                <div class="chart-box">
-                    <canvas id="activitiesDoughnutChart"></canvas>
-                </div>
+            <div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
                 <div class="chart-box">
                     <canvas id="academicLevelsChart"></canvas>
                 </div>
@@ -910,8 +904,6 @@
         let currentPage = 1;
         const rowsPerPage = 20;
 
-        let classesChartInstance = null;
-        let activitiesChartInstance = null;
         let academicLevelsChartInstance = null;
         let examsComparisonChartInstance = null;
 
@@ -1248,53 +1240,8 @@
         }
 
         function initCharts() {
-            const ctxBar = document.getElementById('classesBarChart').getContext('2d');
-            const ctxDoughnut = document.getElementById('activitiesDoughnutChart').getContext('2d');
             const ctxLevels = document.getElementById('academicLevelsChart').getContext('2d');
             const ctxExams = document.getElementById('examsComparisonChart').getContext('2d');
-
-            classesChartInstance = new Chart(ctxBar, {
-                type: 'bar',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'عدد الطالبات لكل صف',
-                        data: [],
-                        backgroundColor: '#be185d',
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        title: { display: true, text: 'توزيع الطالبات على الصفوف الدراسية', font: { family: 'Segoe UI', size: 14 } }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { precision: 0 } }
-                    }
-                }
-            });
-
-            activitiesChartInstance = new Chart(ctxDoughnut, {
-                type: 'doughnut',
-                data: {
-                    labels: ['المشاركات', 'الواجبات', 'المهارات', 'المشاريع', 'الغياب'],
-                    datasets: [{
-                        data: [0, 0, 0, 0, 0],
-                        backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: { display: true, text: 'مؤشرات الأنشطة والتقييمات العامة', font: { family: 'Segoe UI', size: 14 } },
-                        legend: { position: 'bottom' }
-                    }
-                }
-            });
 
             academicLevelsChartInstance = new Chart(ctxLevels, {
                 type: 'pie',
@@ -1345,31 +1292,8 @@
         }
 
         function updateCharts() {
-            if (!classesChartInstance || !activitiesChartInstance || !academicLevelsChartInstance || !examsComparisonChartInstance) return;
+            if (!academicLevelsChartInstance || !examsComparisonChartInstance) return;
 
-            const defaultClasses = ["سادس/1", "سادس/2", "سادس/3", "سادس/4", "سادس/5", "سادس/6", "سادس/7", "سادس/8"];
-            const existingClasses = students.map(s => s.studentClass || 'سادس/1');
-            const allClasses = [...new Set([...defaultClasses, ...existingClasses])].filter(c => c && c.trim() !== "");
-
-            const classCounts = allClasses.map(cls => students.filter(s => (s.studentClass || 'سادس/1') === cls).length);
-
-            classesChartInstance.data.labels = allClasses;
-            classesChartInstance.data.datasets[0].data = classCounts;
-            classesChartInstance.update();
-
-            let totalPart = 0, totalHw = 0, totalSk = 0, totalPr = 0, totalAb = 0;
-            students.forEach(st => {
-                totalPart += st.participation || 0;
-                totalHw += st.homework || 0;
-                totalSk += st.skills || 0;
-                totalPr += st.projects || 0;
-                totalAb += st.absence || 0;
-            });
-
-            activitiesChartInstance.data.datasets[0].data = [totalPart, totalHw, totalSk, totalPr, totalAb];
-            activitiesChartInstance.update();
-
-            // تحليل مستويات التحصيل والـ KPIs
             let excellentCount = 0, mediumCount = 0, atRiskCount = 0;
             let sumExam1 = 0, countExam1 = 0, sumExam2 = 0, countExam2 = 0;
 
@@ -1383,7 +1307,6 @@
                     countExam2++;
                 }
 
-                // حساب متوسط مبدئي للطالبة بناءً على الفترات أو التفاعل
                 const score1 = st.exam2 !== undefined && st.exam2 !== '' ? Number(st.exam2) : (st.exam1 !== undefined && st.exam1 !== '' ? Number(st.exam1) : null);
                 if (score1 !== null) {
                     const percentage = (score1 / 20) * 100;
@@ -1402,7 +1325,6 @@
             examsComparisonChartInstance.data.datasets[0].data = [avg1Val.toFixed(1), avg2Val.toFixed(1)];
             examsComparisonChartInstance.update();
 
-            // تحديث البطاقات التحليلية (KPIs)
             const executedLessonsCount = Object.values(lessonStatus).filter(val => val === true).length;
             const curriculumProgressPercent = lessons.length > 0 ? Math.round((executedLessonsCount / lessons.length) * 100) : 0;
             document.getElementById('kpiCurriculumProgress').textContent = curriculumProgressPercent + '%';
@@ -2325,3 +2247,4 @@
     </script>
 </body>
 </html>
+
