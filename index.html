@@ -667,7 +667,18 @@
                     <strong id="kpiGeneralAvg">- / 20</strong>
                 </div>
             </div>
-            <div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+
+            <!-- قائمة منسدلة خاصة بالطالبات بحاجة لدعم عاجل -->
+            <div class="sub-box" style="margin-top: 15px; border-color: var(--danger);">
+                <h5 style="color: var(--danger);">⚠️ قائمة طالبات بحاجة لدعم عاجل (أقل من 60% أو تحصيل منخفض)</h5>
+                <div class="form-row" style="margin-bottom: 0;">
+                    <select id="atRiskDropdown" onchange="selectAtRiskStudent(this.value)">
+                        <option value="">-- اختر طالبة من قائمة الدعم العاجل لعرض ملفها --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 15px;">
                 <div class="chart-box">
                     <canvas id="academicLevelsChart"></canvas>
                 </div>
@@ -972,7 +983,6 @@
             }
         });
 
-        // دالة إظهار وإخفاء زر العودة للأعلى حسب التمرير
         window.addEventListener('scroll', function() {
             const topBtn = document.getElementById('scrollToTopBtn');
             if (window.scrollY > 300) {
@@ -1359,7 +1369,11 @@
             let excellentCount = 0, mediumCount = 0, atRiskCount = 0;
             let sumExam1 = 0, countExam1 = 0, sumExam2 = 0, countExam2 = 0;
 
-            students.forEach(st => {
+            const atRiskDropdown = document.getElementById('atRiskDropdown');
+            const currentAtRiskVal = atRiskDropdown.value;
+            atRiskDropdown.innerHTML = '<option value="">-- اختر طالبة من قائمة الدعم العاجل لعرض ملفها --</option>';
+
+            students.forEach((st, idx) => {
                 if (st.exam1 !== undefined && st.exam1 !== '') {
                     sumExam1 += Number(st.exam1);
                     countExam1++;
@@ -1374,9 +1388,14 @@
                     const percentage = (score1 / 20) * 100;
                     if (percentage >= 85) excellentCount++;
                     else if (percentage >= 60) mediumCount++;
-                    else atRiskCount++;
+                    else {
+                        atRiskCount++;
+                        atRiskDropdown.innerHTML += `<option value="${idx}">${st.name} (${st.studentClass || 'سادس/1'}) - الدرجة: ${score1}/20</option>`;
+                    }
                 }
             });
+
+            atRiskDropdown.value = currentAtRiskVal;
 
             academicLevelsChartInstance.data.datasets[0].data = [excellentCount, mediumCount, atRiskCount];
             academicLevelsChartInstance.update();
@@ -1399,6 +1418,19 @@
 
             const generalAvgVal = (countExam1 > 0 || countExam2 > 0) ? ((avg1Val + avg2Val) / (countExam1 > 0 && countExam2 > 0 ? 2 : 1)).toFixed(1) + ' / 20' : '- / 20';
             document.getElementById('kpiGeneralAvg').textContent = generalAvgVal;
+        }
+
+        function selectAtRiskStudent(indexStr) {
+            if (indexStr === "") return;
+            const index = parseInt(indexStr);
+            if (!isNaN(index) && students[index]) {
+                selectedStudentIndex = index;
+                document.getElementById('studentSearchInput').value = `${students[index].name} (${students[index].studentClass || ''})`;
+                loadStudentDetails();
+                
+                // التمرير بسلاسة إلى قسم الاستعلام والتتبع
+                document.getElementById('studentCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         function updateChartsTheme() {
